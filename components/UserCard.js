@@ -6,7 +6,6 @@ import {
 } from 'react-native-elements'
 import { Rating, AirbnbRating } from 'react-native-ratings';
 
-
 const UserCard = (probs)=>{
     const dimensions = Dimensions.get('window');
     const AvatarWidth = dimensions.width / 2;
@@ -118,7 +117,8 @@ const UserCard = (probs)=>{
 
 
           <Icon name='share-variant' type='material-community' style={{ alignSelf: 'flex-end',marginRight:20 }} />
-          <Icon name='eye' type='material-community' />
+          <Icon name='eye' type='material-community' 
+          onPress={() => probs.currentUser? probs.navigation.navigate('UnderConstruction'):probs.navigation.replace('SignInContainer')}/>
 
         </View>
 

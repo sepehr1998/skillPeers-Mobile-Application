@@ -1,6 +1,7 @@
-export function getRepos(response) {
+
+export function getUsers(response) {
     return {
-      type: 'Get_Repos',
+      type: 'GET_USERS',
       payload: response
     }
   }
@@ -21,7 +22,7 @@ export function getRepos(response) {
   
   
   
-  export function getRepoThunk(term, price, exprOrPrice, skills, countries,page,size,token) {
+  export function getUsersThunk(term, price, exprOrPrice, skills, countries,page,size,token) {
     //alert(exprOrPrice)
     let priceSort = "ASCENDING";
     if (price == 0) priceSort = "ASCENDING"
@@ -40,7 +41,7 @@ export function getRepos(response) {
         .then(function (response) {
           //console.log(response)
           // var arr = response//.slice(0,10);
-          dispatch(getRepos(response));
+          dispatch(getUsers(response));
         }).catch((error) => {
           alert(error, "ERRRRRORRR");
         });
@@ -72,11 +73,17 @@ export function getRepos(response) {
     }
   }
   
-  export function repoSelected(repo) {
-  
+  export function userLogined(user) {
     return {
-      type: 'Repo_Selected',
-      payload: repo
+      type: 'USER_LOGINED',
+      payload: user
+    }
+  }
+
+  export function userProfile(userProfile) {
+    return {
+      type: 'GET_PROFILE',
+      payload: userProfile
     }
   }
   

@@ -1,14 +1,16 @@
 import {combineReducers} from 'redux';
-import GitReducer from './gitReducer.js';
+import UsersReducer from './usersReducer.js';
 import SkillReducer from './skillReducer.js';
 import CountryReducer from './countryReducer.js';
-import ActiveRepo from './activeReducer.js';
+import CurrentUser from './currentUser.js';
+import CurrentUserProfile from './currentUserProfile.js';
 
 const allReducers= combineReducers({
-  repos: GitReducer,
+  users: UsersReducer,
   skillsForFilter: SkillReducer,
   countriesForFilter: CountryReducer,
-  activeRepo: ActiveRepo,
+  currentUser: CurrentUser,
+  profile: CurrentUserProfile,
 });
 
 export default allReducers;

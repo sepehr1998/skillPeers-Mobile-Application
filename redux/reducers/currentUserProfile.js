@@ -1,6 +1,9 @@
+
 export default function(state= null, action){
   switch (action.type) {
-    case "Repo_Selected": return action.payload;
+    case 'GET_PROFILE':{
+      state = action.payload;
+    }
   }
   return state;
 }

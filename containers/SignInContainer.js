@@ -2,14 +2,14 @@
 import * as React from 'react';
 import Color from '../constants/color.js';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Login from './login';
-import Register from './register';
+import Login from './Login';
+import Register from './Register';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function SignInContainer() {
   return (
-    <Tab.Navigator style={{marginTop:37}} 
+    <Tab.Navigator style={{paddingTop:40,backgroundColor:'white'}} 
     tabBarOptions={{
       activeTintColor: Color.primary,
       inactiveTintColor: 'gray',

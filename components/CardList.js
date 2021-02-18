@@ -13,9 +13,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Actions } from 'react-native-router-flux';
 import {
-  getRepos,
-  getRepoThunk,
-  repoSelected,
+  getUsers,
+  getUsersThunk,
+  userLogined,
   getRepoSkillForFilter,
   getRepoSkillsForFilterThunk,
   getRepoCountriesForFilterThunk,
@@ -82,15 +82,27 @@ const buttons_Experience = ['Experience Up', 'Experience Down']
 
 class CardList extends Component {
   UNSAFE_componentWillMount() {
-    this.props.getRepoThunk('',0,'priceAvg',
+    this.props.getUsersThunk('',0,'priceAvg',
     this.state.selectedItemsSkill,this.state.selectedItemsCountry,
     this.state.currentPage,this.state.pageSize,
-    this.props.activeRepo?.accessToken? this.props.activeRepo?.accessToken :'');
+    this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
     this.props.getRepoSkillsForFilterThunk();
     this.props.getRepoCountriesForFilterThunk();
  
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.currentUser !== this.props.currentUser) {
+      if(this.props.currentUser){
+      this.props.getUsersThunk(
+        this.state.search,this.state.selectedIndex_Price,
+        this.state.experiseOrPrice,this.state.selectedItemsSkill,this.state.selectedItemsCountry,
+        this.state.currentPage,this.state.pageSize,
+        this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
+      }
+    }
+}
+  
   constructor(props) {
     super()
     this.state =
@@ -113,20 +125,20 @@ class CardList extends Component {
   onSelectedItemsChangeSkill = (selectedItemsSkill) => {
     this.setState({ selectedItemsSkill });
    //@@@@@@@@@@@@
-    this.props.getRepoThunk(
+    this.props.getUsersThunk(
       this.state.search,this.state.selectedIndex_Price,
       this.state.experiseOrPrice,selectedItemsSkill,this.state.selectedItemsCountry,
       this.state.currentPage,this.state.pageSize,
-      this.props.activeRepo?.accessToken? this.props.activeRepo?.accessToken :'');
+      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
   };
   onSelectedItemsChangeCountry = (selectedItemsCountry) => {
     this.setState({ selectedItemsCountry });
     //@@@@@@@@@@@
-    this.props.getRepoThunk(
+    this.props.getUsersThunk(
       this.state.search,this.state.selectedIndex_Price,
       this.state.experiseOrPrice,this.state.selectedItemsSkill,selectedItemsCountry,
       this.state.currentPage,this.state.pageSize,
-      this.props.activeRepo?.accessToken? this.props.activeRepo?.accessToken :'');
+      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
 
   };
   changeState(value) {
@@ -139,11 +151,11 @@ class CardList extends Component {
     this.state.selectedIndex_Experience=2;
     this.state.experiseOrPrice='priceAvg';
     //@@@@@@@@@@@
-    this.props.getRepoThunk(
+    this.props.getUsersThunk(
       this.state.search,selectedIndex_Price,'priceAvg',
       this.state.selectedItemsSkill,this.state.selectedItemsCountry,
       this.state.currentPage,this.state.pageSize,
-      this.props.activeRepo?.accessToken? this.props.activeRepo?.accessToken :'');
+      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
 
   }
   updateIndex_Experience(selectedIndex_Experience) {
@@ -151,20 +163,20 @@ class CardList extends Component {
     this.state.selectedIndex_Price=2;
     this.state.experiseOrPrice='experimentAvg'
      //@@@@@@@@@@@
-    this.props.getRepoThunk(
+    this.props.getUsersThunk(
       this.state.search,selectedIndex_Experience,'experimentAvg',
       this.state.selectedItemsSkill,this.state.selectedItemsCountry,
       this.state.currentPage,this.state.pageSize,
-      this.props.activeRepo?.accessToken? this.props.activeRepo?.accessToken :'');
+      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
   }
   updateSearch = (search) => {
     this.setState({ search });
     //@@@@@@@@@@@@@@
-    this.props.getRepoThunk(
+    this.props.getUsersThunk(
       search,this.state.selectedIndex_Price,this.state.experiseOrPrice,
       this.state.selectedItemsSkill,this.state.selectedItemsCountry,
       this.state.currentPage,this.state.pageSize,
-      this.props.activeRepo?.accessToken? this.props.activeRepo?.accessToken :'');
+      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
   
   };
 
@@ -186,12 +198,11 @@ class CardList extends Component {
 
     const renderItem = ({ item }) => (
       // <Item title={item.firstName} />
-      <UserCard user={item} />
-
+      <UserCard user={item} currentUser={this.props.currentUser} navigation={this.props.navigation}/>
     );
 
 
-    if (this.props.repos.length === 0) {
+    if (this.props.users.length === 0) {
       return (
         <View style={[styles.container1, styles.horizontal]}>
 
@@ -199,22 +210,12 @@ class CardList extends Component {
         </View>
       );
     }
-    else if (this.props.repos.length !== 0) {
+    else if (this.props.users.length !== 0) {
 
       return (
 
         <SafeAreaView style={styles.container}>
           <View style={{ flex: 1, backgroundColor: 'white' }}>
-          {/* <Header
-statusBarProps={{ barStyle: 'light-content' }}
-  centerComponent={{ text: 'Proslinks', style: { color: '#fff' } }}
-  containerStyle={{
-    backgroundColor: color.primaryBackground,
-    justifyContent: 'space-around',
-    height:50,
-    paddingTop:0
-  }}
-/> */}
 
             <View style={{ 
               flexDirection: 'row',
@@ -252,7 +253,7 @@ statusBarProps={{ barStyle: 'light-content' }}
             </View>
             <View style={{ flex: 3,marginTop:0,paddingTop:0, }}>
               <FlatList
-                data={this.props.repos}
+                data={this.props.users}
                 renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
               />
@@ -358,10 +359,10 @@ statusBarProps={{ barStyle: 'light-content' }}
 //bind state variables to variables
 function mapStateToProps(state) {
   return {
-    repos: state.repos,
+    users: state.users,
     skillsForFilter: state.skillsForFilter,
     countriesForFilter: state.countriesForFilter,
-    activeRepo : state.activeRepo
+    currentUser : state.currentUser
   };
 }
 
@@ -369,9 +370,9 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
     {
-      getRepos: getRepos,
-      getRepoThunk: getRepoThunk,
-      repoSelected: repoSelected,
+      getUsers: getUsers,
+      getUsersThunk: getUsersThunk,
+      userLogined: userLogined,
       getRepoSkillsForFilterThunk: getRepoSkillsForFilterThunk,
       getRepoSkillForFilter: getRepoSkillForFilter,
       getRepoCountryForFilter: getRepoCountryForFilter,

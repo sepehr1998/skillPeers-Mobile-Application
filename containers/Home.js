@@ -11,9 +11,18 @@ import CardList from '../components/CardList';
 
 const Tab = createBottomTabNavigator();
 
-export default function Home() {
+export default function Home({route}) {
+  
+  
+  const { initialState } = {
+    "initialState": "Home",
+  };
+
+  if(route.params){
+    const { initialState } = route.params;
+  }
     return (
-          <Tab.Navigator initialRouteName={'Home'}
+          <Tab.Navigator initialRouteName={initialState}
             screenOptions={({ route }) => ({
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;

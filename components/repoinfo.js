@@ -21,12 +21,13 @@ class RepoInfo extends Component{
               </Header>
               <Content>
               {/* <List>
-              <ListItem><Text>{this.props.activeRepo.full_name}</Text></ListItem>
-              <ListItem><Text>{this.props.activeRepo.description}</Text></ListItem>
-              <ListItem><Text>{this.props.activeRepo.id}</Text></ListItem>
-              <ListItem><Text>{this.props.activeRepo.owner.login}</Text></ListItem>
-              <ListItem><Text>{this.props.activeRepo.url}</Text></ListItem>
-              </List> */}<Text>Detail :{this.props.activeRepo.firstName}</Text>
+              <ListItem><Text>{this.props.currentUser.full_name}</Text></ListItem>
+              <ListItem><Text>{this.props.currentUser.description}</Text></ListItem>
+              <ListItem><Text>{this.props.currentUser.id}</Text></ListItem>
+              <ListItem><Text>{this.props.currentUser.owner.login}</Text></ListItem>
+              <ListItem><Text>{this.props.currentUser.url}</Text></ListItem>
+              </List> */}
+              <Text>Detail :{this.props.currentUser.firstName}</Text>
               </Content>
       </Container>
     );
@@ -34,7 +35,7 @@ class RepoInfo extends Component{
 }
 function mapStateToProps(state){
   return{
-    activeRepo : state.activeRepo
+    currentUser : state.currentUser
   };
 }
 export default connect(mapStateToProps)(RepoInfo);

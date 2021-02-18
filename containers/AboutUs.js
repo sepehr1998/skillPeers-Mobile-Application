@@ -13,7 +13,7 @@ const Tab = createMaterialTopTabNavigator();
 function About() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:'#FFFFFF' }}>
-      <Text>About!</Text>
+      <Text>Under Construction</Text>
     </View>
   );
 }
@@ -22,14 +22,14 @@ function About() {
 function Contact() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:'#FFFFFF' }}>
-      <Text>Contact!</Text>
+      <Text>Under Construction</Text>
     </View>
   );
 }
 
 export default function AboutUs() {
   return (
-    <Tab.Navigator style={{marginTop:30}} 
+    <Tab.Navigator style={{paddingTop:40,backgroundColor:'white'}} 
     tabBarOptions={{
       activeTintColor: Color.primary,
       inactiveTintColor: 'gray',

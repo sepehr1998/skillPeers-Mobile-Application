@@ -190,10 +190,10 @@ export default class ProslinkSlider extends React.Component {
           </View>
           <View style={styles.buttonContainer}>
             {/* <TouchableOpacity
-              style={[styles.button, { backgroundColor: '#f3f7fd' }]}  onPress={() => {  this.state = { initRoute: 'Login' };this.props.navigation.navigate('Authentication',{initRoute:'Login'})}} >
+              style={[styles.button, { backgroundColor: '#f3f7fd' }]}  onPress={() => {  this.state = { initRoute: 'Login' };this.props.navigation.replace('SignInContainer',{initRoute:'Login'})}} >
               <Text style={styles.buttonText}>Log in</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button,{ backgroundColor: '#f3f7fd' }]}  onPress={() => {this.state = { initRoute: 'Register' };this.props.navigation.navigate('Authentication',{initRoute:'Register'})}} >
+            <TouchableOpacity style={[styles.button,{ backgroundColor: '#f3f7fd' }]}  onPress={() => {this.state = { initRoute: 'Register' };this.props.navigation.replace('SignInContainer',{initRoute:'Register'})}} >
               <Text style={styles.buttonText}>Sign up</Text>
             </TouchableOpacity> */}
     
@@ -212,13 +212,13 @@ export default class ProslinkSlider extends React.Component {
 
   Done ()  {
    this.storeData('erfan');
-   this.props.navigation.navigate('Home')//Home
+   this.props.navigation.replace('Home')//Home
   }
 
   render() {
     this.getData();
     if(this.state.showRealApp){
-       this.props.navigation.navigate('Home')//Home
+       this.props.navigation.replace('Home')//Home
     }
     return (
         //  <StatusBar translucent backgroundColor="transparent" />

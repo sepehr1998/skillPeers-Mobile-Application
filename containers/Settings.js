@@ -1,8 +1,8 @@
 
 import Color from '../constants/color.js';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Login from './login';
-import Register from './register';
+import Login from './Login';
+import Register from './Register';
 
 import React, { Component } from 'react';
 import {
@@ -18,7 +18,7 @@ export default class Settings extends Component {
   render() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Settings!</Text>
+          <Text>Under Construction</Text>
         </View>
       );
   }
