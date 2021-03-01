@@ -32,74 +32,23 @@ import UserCard from './UserCard';
 import  color  from '../constants/color';
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-  },
-  container1: {
-    flex: 1,
-    justifyContent: "center"
-  },
-  horizontal: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10
-  },
-  myRadio: {
-    paddingLeft: 6,
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 3,
-    backgroundColor: 'white',
-    height: 55,
-    elevation: 5,
-    borderRadius: 4,
-
-    borderColor: '#fe48d1',
-    borderWidth: .2
-  },
-  myRadioPress: {
-    paddingLeft: 6,
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 3,
-    backgroundColor: 'white',
-    height: 55,
-    elevation: 5,
-    borderRadius: 4,
-    borderColor: 'white',
-    borderWidth: 0
-  },
-
-
-});
-
-
 
 const buttons_Price = ['Price Up', 'Price Down']
 const buttons_Experience = ['Experience Up', 'Experience Down']
 
 class CardList extends Component {
   UNSAFE_componentWillMount() {
-    this.props.getUsersThunk('',0,'priceAvg',
-    this.state.selectedItemsSkill,this.state.selectedItemsCountry,
-    this.state.currentPage,this.state.pageSize,
-    this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
+    this.getUsersThunk();
     this.props.getRepoSkillsForFilterThunk();
     this.props.getRepoCountriesForFilterThunk();
- 
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.currentUser !== this.props.currentUser) {
-      if(this.props.currentUser){
-      this.props.getUsersThunk(
-        this.state.search,this.state.selectedIndex_Price,
-        this.state.experiseOrPrice,this.state.selectedItemsSkill,this.state.selectedItemsCountry,
-        this.state.currentPage,this.state.pageSize,
-        this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
-      }
+      this.resetPaginationParams();
+      //if(this.props.currentUser){
+        this.getUsersThunk();
+      //}
     }
 }
   
@@ -110,35 +59,128 @@ class CardList extends Component {
       value: 'second',
       selectedIndex_Price: 0,
       selectedIndex_Experience: 2,
-      checked: false,
       search: '',
       experiseOrPrice:'priceAvg',
       currentPage: 1,
       pageSize: 3,
       pageCount: 10,
+      users:[],
+      loading:true,
     }
 
     this.changeState = this.changeState.bind(this)
     this.updateIndex_Price = this.updateIndex_Price.bind(this)
     this.updateIndex_Experience = this.updateIndex_Experience.bind(this)
   }
+
+
+  resetPaginationParams(){
+    this.setState({currentPage: 1});
+    this.setState({pageSize: 3});
+    this.setState({pageCount: 10});
+  }
+
+  convertPramstoUrlString(params){
+    return Object.keys(params).map(function(key) {
+       return key + '=' + params[key];
+    }).join('&');
+  }
+
+  getUsersThunk() {
+    this.setState({loading: true});
+    let priceSort = "ASCENDING";
+    if (this.state.selectedIndex_Price == 0) priceSort = "ASCENDING"
+    else priceSort = "DESCENDING";
+
+    var params = {};
+    if(this.state.currentPage)params.page = this.state.currentPage;
+    if(this.state.pageSize)params.size = this.state.pageSize;
+    if(this.state.selectedItemsSkill)params.skillIds = this.state.selectedItemsSkill;
+    if(this.state.selectedItemsCountry)params.countryIds = this.state.selectedItemsCountry;
+    if(this.state.experiseOrPrice)params["sort[0].column"] = this.state.experiseOrPrice;
+    if(priceSort)params["sort[0].type"] = priceSort;
+    params.term = this.state.search;
+    //console.log("params",this.convertPramstoUrlString(params));
+    var token = this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'';
+
+      fetch('http://44.240.53.177/api/pub/users/search?'+this.convertPramstoUrlString(params),
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': ""+token+""
+          }
+        })
+        .then(e => e.json())
+        .then((response)=> {
+          this.setState({users: this.state.users.concat(response)});
+          this.setState({loading: false});
+          this.calculatePageCount(params);
+        }).catch((error) => {
+          this.setState({loading: false});
+        });
+  }  
+
+  calculatePageCount(params) {
+    var countparams = JSON.stringify(params);
+        countparams = JSON.parse(countparams);
+        delete countparams.page;
+        delete countparams.size; 
+ 
+    //console.log("count params",this.convertPramstoUrlString(countparams));
+
+    var token = this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'';
+    //console.log("token",token);
+
+    fetch('http://44.240.53.177/api/pub/users/search/count?'+this.convertPramstoUrlString(countparams),
+    {
+      method: 'GET',
+      headers: {
+        'Authorization': ""+token+""
+      }
+    })
+    .then(e => e.json())
+    .then((res)=> {
+      var pageCount = Math.floor((res + this.state.pageSize - 1) / this.state.pageSize);
+      this.setState({pageCount: pageCount});
+    }).catch((error) => {
+      //console.log("error",error);
+      this.setState({pageCount: 1});
+    });
+}
+
+
+loadMore(){
+  if(this.state.currentPage>=this.state.pageCount){
+    console.log("reach end");
+    return;
+  }
+
+  var pageNumUpdater = new Promise((resolve, reject) =>{     
+    var newPageNum = this.state.currentPage+1;
+    //console.log("update page num",newPageNum);
+    this.setState({currentPage: newPageNum});
+    resolve();        
+  });  
+  pageNumUpdater
+  .then((result) => {
+    //console.log("load more called",this.state.currentPage);
+    this.getUsersThunk();
+  })
+  .catch((error) => {
+    //console.log("error",error);
+  });
+}
+
+
   onSelectedItemsChangeSkill = (selectedItemsSkill) => {
-    this.setState({ selectedItemsSkill });
+    this.setState({ selectedItemsSkill }); 
    //@@@@@@@@@@@@
-    this.props.getUsersThunk(
-      this.state.search,this.state.selectedIndex_Price,
-      this.state.experiseOrPrice,selectedItemsSkill,this.state.selectedItemsCountry,
-      this.state.currentPage,this.state.pageSize,
-      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
+    this.getUsersThunk();
   };
   onSelectedItemsChangeCountry = (selectedItemsCountry) => {
     this.setState({ selectedItemsCountry });
     //@@@@@@@@@@@
-    this.props.getUsersThunk(
-      this.state.search,this.state.selectedIndex_Price,
-      this.state.experiseOrPrice,this.state.selectedItemsSkill,selectedItemsCountry,
-      this.state.currentPage,this.state.pageSize,
-      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
+    this.getUsersThunk();
 
   };
   changeState(value) {
@@ -151,11 +193,7 @@ class CardList extends Component {
     this.state.selectedIndex_Experience=2;
     this.state.experiseOrPrice='priceAvg';
     //@@@@@@@@@@@
-    this.props.getUsersThunk(
-      this.state.search,selectedIndex_Price,'priceAvg',
-      this.state.selectedItemsSkill,this.state.selectedItemsCountry,
-      this.state.currentPage,this.state.pageSize,
-      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
+    this.getUsersThunk();
 
   }
   updateIndex_Experience(selectedIndex_Experience) {
@@ -163,20 +201,12 @@ class CardList extends Component {
     this.state.selectedIndex_Price=2;
     this.state.experiseOrPrice='experimentAvg'
      //@@@@@@@@@@@
-    this.props.getUsersThunk(
-      this.state.search,selectedIndex_Experience,'experimentAvg',
-      this.state.selectedItemsSkill,this.state.selectedItemsCountry,
-      this.state.currentPage,this.state.pageSize,
-      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
+    this.getUsersThunk();
   }
   updateSearch = (search) => {
     this.setState({ search });
     //@@@@@@@@@@@@@@
-    this.props.getUsersThunk(
-      search,this.state.selectedIndex_Price,this.state.experiseOrPrice,
-      this.state.selectedItemsSkill,this.state.selectedItemsCountry,
-      this.state.currentPage,this.state.pageSize,
-      this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'');
+    this.getUsersThunk();
   
   };
 
@@ -202,15 +232,19 @@ class CardList extends Component {
     );
 
 
-    if (this.props.users.length === 0) {
-      return (
-        <View style={[styles.container1, styles.horizontal]}>
-
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
+    if(!this.state.loading && this.state.users.length==0){
+      return(
+         <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+           <Text>No Users Found</Text>
+           {this.state.loading &&
+            <View style={styles.loading}>
+            <ActivityIndicator size="large" color={color.primary} />
+            </View>
+           }
+         </View>
       );
     }
-    else if (this.props.users.length !== 0) {
+    else {
 
       return (
 
@@ -253,10 +287,20 @@ class CardList extends Component {
             </View>
             <View style={{ flex: 3,marginTop:0,paddingTop:0, }}>
               <FlatList
-                data={this.props.users}
+                data={this.state.users}
                 renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
-              />
+                //onEndReached={this.loadMore()}
+                onEndThreshold={0}
+                onEndReached={() => this.callOnScrollEnd = true}
+                onMomentumScrollEnd={() => {
+                  this.callOnScrollEnd && this.loadMore()
+                  this.callOnScrollEnd = false
+                }}
+                keyExtractor={(item,index) => index}
+              /> 
+            </View>
+            <View>
+
             </View>
             <RBSheet
               ref={ref => {
@@ -349,7 +393,11 @@ class CardList extends Component {
             </RBSheet>
 
           </View>
-
+          {this.state.loading &&
+            <View style={styles.loading}>
+            <ActivityIndicator size="large" color={color.primary} />
+            </View>
+           }
         </SafeAreaView>
       );
     }
@@ -381,6 +429,59 @@ function matchDispatchToProps(dispatch) {
     }, dispatch)
 }
 
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
+  container1: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10
+  },
+  myRadio: {
+    paddingLeft: 6,
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 3,
+    backgroundColor: 'white',
+    height: 55,
+    elevation: 5,
+    borderRadius: 4,
+
+    borderColor: '#fe48d1',
+    borderWidth: .2
+  },
+  myRadioPress: {
+    paddingLeft: 6,
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 3,
+    backgroundColor: 'white',
+    height: 55,
+    elevation: 5,
+    borderRadius: 4,
+    borderColor: 'white',
+    borderWidth: 0
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+
+
+});
 
 
 export default connect(mapStateToProps, matchDispatchToProps)(CardList);

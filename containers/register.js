@@ -63,7 +63,8 @@ class Register extends Component {
         //this.toast.show(msg);
         this.setState({ errorText:msg });
       }
-      isEmpty(str) {
+      
+    isEmpty(str) {
         return (!str || 0 === str.length || !str.trim());
     }
     validateEmail(email) 

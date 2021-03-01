@@ -10,6 +10,9 @@ const UserCard = (probs)=>{
     const dimensions = Dimensions.get('window');
     const AvatarWidth = dimensions.width / 2;
 
+       function viewUserDetail(){
+
+       };
        return (
         <Card>
 
@@ -118,7 +121,7 @@ const UserCard = (probs)=>{
 
           <Icon name='share-variant' type='material-community' style={{ alignSelf: 'flex-end',marginRight:20 }} />
           <Icon name='eye' type='material-community' 
-          onPress={() => probs.currentUser? probs.navigation.navigate('UnderConstruction'):probs.navigation.replace('SignInContainer')}/>
+          onPress={() => probs.currentUser? probs.navigation.navigate('UserDetail',{userId:probs.user.id}):probs.navigation.replace('SignInContainer')}/>
 
         </View>
 

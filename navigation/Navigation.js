@@ -12,6 +12,7 @@ import Home from '../containers/Home';
 import AboutUs from '../containers/AboutUs';
 import SignInContainer from '../containers/SignInContainer';
 import UnderConstruction from '../containers/UnderConstruction';
+import UserDetail from '../containers/UserDetail';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ const Navigation   = () => {
         <Stack.Screen name="CardList" component={CardList} /> 
         <Stack.Screen name="ConfirmEmail" component={ConfirmEmail} /> 
         <Stack.Screen name="UnderConstruction" component={UnderConstruction} /> 
+        <Stack.Screen name="UserDetail" component={UserDetail} /> 
       </Stack.Navigator> 
      </NavigationContainer> 
     </>
