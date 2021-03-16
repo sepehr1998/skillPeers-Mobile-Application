@@ -1,7 +1,7 @@
 
 import Color from '../constants/color.js';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Login from './Login';
+import Login from './login';
 import Register from './Register';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

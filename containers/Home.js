@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Color from '../constants/color.js';
-import AboutUs from './AboutUs';
+import About from './About';
 import Settings from './Settings';
 import Profile from './Profile';
 import CardList from '../components/CardList';
@@ -33,7 +33,7 @@ export default function Home({route}) {
                     : 'home-outline';
                 } else if (route.name === 'Settings') {
                   iconName = focused ? 'settings' : 'settings-outline';
-                }else if (route.name === 'AboutUs') {
+                }else if (route.name === 'About') {
                   iconName = focused ? 'information-circle' : 'information-circle-outline';
                 }else if (route.name === 'Profile') {
                   iconName = focused ? 'person' : 'person-outline';
@@ -50,7 +50,7 @@ export default function Home({route}) {
           >
           <Tab.Screen name="Profile" component={Profile} />
             <Tab.Screen name="Settings" component={Settings} />
-            <Tab.Screen name="AboutUs" component={AboutUs} />
+            <Tab.Screen name="About" component={About} />
             <Tab.Screen name="Home" component={CardList} />
             
           </Tab.Navigator>

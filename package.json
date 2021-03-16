@@ -10,6 +10,7 @@
   "dependencies": {
     "@expo/vector-icons": "12.0.3",
     "@react-native-async-storage/async-storage": "1.13.2",
+    "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "5.9.7",
     "@react-native-community/picker": "^1.8.1",
@@ -21,6 +22,7 @@
     "expo": "~40.0.0",
     "expo-app-loading": "^1.0.1",
     "expo-font": "~8.4.0",
+    "expo-image-picker": "~9.2.0",
     "expo-status-bar": "~1.0.3",
     "native-base": "2.13.14",
     "react": "16.13.1",
@@ -35,6 +37,7 @@
     "react-native-image-crop-picker": "^0.36.0",
     "react-native-material-ripple": "0.9.1",
     "react-native-multiple-select": "0.5.5",
+    "react-native-numeric-input": "^1.8.3",
     "react-native-paper": "4.2.0",
     "react-native-ratings": "7.3.0",
     "react-native-raw-bottom-sheet": "2.2.0",
@@ -46,12 +49,13 @@
     "react-native-simple-bottom-sheet": "1.0.1",
     "react-native-tab-view": "^2.15.2",
     "react-native-timeline-flatlist": "^0.7.3",
+    "react-native-ui-xg": "^0.0.6",
     "react-native-vector-icons": "7.0.0",
     "react-native-web": "~0.13.12",
-    "react-redux": "7.2.1",
-    "redux": "4.0.5",
-    "redux-thunk": "2.3.0",
-    "expo-image-picker": "~9.2.0"
+    "react-redux": "^7.2.1",
+    "redux": "^4.0.5",
+    "redux-persist": "^6.0.0",
+    "redux-thunk": "2.3.0"
   },
   "devDependencies": {
     "@babel/core": "7.11.5",
@@ -61,7 +65,8 @@
     "eslint": "7.8.0",
     "jest": "26.4.2",
     "metro-react-native-babel-preset": "0.63.0",
-    "react-test-renderer": "16.13.1"
+    "react-test-renderer": "16.13.1",
+    "redux-logger": "^3.0.6"
   },
   "private": true
 }

@@ -53,8 +53,8 @@ export function getUsers(response) {
     return function (dispatch, getState) {
       fetch('http://44.240.53.177/api/pub/skills?')
         .then(e => e.json())
-        .then(function (response) {
-          dispatch(getRepoSkillForFilter(response))
+        .then( (response)=> {
+          dispatch(getRepoSkillForFilter(response));
         }).catch((error) => {
           alert(error, "ERRRRRORRR");
         });

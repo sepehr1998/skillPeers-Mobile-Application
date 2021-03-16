@@ -2,8 +2,8 @@
 import * as React from 'react';
 import Color from '../constants/color.js';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Login from './Login';
-import Register from './Register';
+import Login from './login.js';
+import Register from './Register.js';
 
 const Tab = createMaterialTopTabNavigator();
 

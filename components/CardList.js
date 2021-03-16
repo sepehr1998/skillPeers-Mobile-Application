@@ -38,9 +38,9 @@ const buttons_Experience = ['Experience Up', 'Experience Down']
 
 class CardList extends Component {
   UNSAFE_componentWillMount() {
-    this.getUsersThunk();
-    this.props.getRepoSkillsForFilterThunk();
-    this.props.getRepoCountriesForFilterThunk();
+     this.getUsersThunk();
+     this.props.getRepoSkillsForFilterThunk();
+     this.props.getRepoCountriesForFilterThunk();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
