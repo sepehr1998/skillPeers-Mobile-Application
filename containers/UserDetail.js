@@ -22,6 +22,7 @@ import { Right, Row } from "native-base";
 import Timeline from "react-native-timeline-flatlist";
 import { Rating, AirbnbRating } from "react-native-elements";
 import AddStarModal from "../components/AddStarModal";
+import SendMessageModal from "../components/SendMessageModal";
 
 class UserDetail extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ class UserDetail extends Component {
   }
 
   getUserProfile() {
+    console.log("get profile for:",this.props.route.params.userId);
     fetch(
       "http://44.240.53.177/api/pub/users/" + this.props.route.params.userId,
       {
@@ -173,7 +175,6 @@ class UserDetail extends Component {
       body: JSON.stringify(newStar.TIME),
     })
       .then((response) => {
-        console.log("varse1 added");
         fetch("http://44.240.53.177/api/idn/rates", {
           method: "PUT",
           headers: {
@@ -184,7 +185,6 @@ class UserDetail extends Component {
           body: JSON.stringify(newStar.COMMUNICATION),
         })
           .then((response) => {
-            console.log("varse2 added");
             fetch("http://44.240.53.177/api/idn/rates", {
               method: "PUT",
               headers: {
@@ -195,22 +195,45 @@ class UserDetail extends Component {
               body: JSON.stringify(newStar.TECHNICAL),
             })
               .then((response) => {
-                console.log("varse3 added");
                 this.setState({ loading: false });
                 this.getUserRate();
               })
               .catch((error) => {
-                console.log("varse10", error);
                 this.setState({ loading: false });
               });
           })
           .catch((error) => {
-            console.log("varse20", error);
             this.setState({ loading: false });
           });
       })
       .catch((error) => {
-        console.log("varse30", error);
+        this.setState({ loading: false });
+      });
+  };
+
+  hideMessageModal = () => {
+    this.setState({ messageModalVisible: false });
+  };
+
+  sendMessage = (message) => {
+    this.setState({ messageModalVisible: false });
+    this.setState({ loading: true });
+    fetch("http://44.240.53.177/api/idn/messages", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "" + this.props.currentUser.accessToken + "",
+      },
+      body: JSON.stringify(message),
+    })
+      .then((response) => {
+        console.log("varse",response);
+        this.setState({ loading: false });
+        this.notifyMessage("message sent successfully");
+      })
+      .catch((error) => {
+        console.log("varseerror", error);
         this.setState({ loading: false });
       });
   };
@@ -281,6 +304,15 @@ class UserDetail extends Component {
                       {this.state.userProfile.profile.country.name}
                     </Text>
                   )}
+
+                  <TouchableOpacity
+                    style={styles.messagesButton}
+                    onPress={() => {
+                      this.setState({ messageModalVisible: true });
+                      }}
+                  >
+                    <Text style={styles.messageText}>Text Me</Text>
+                  </TouchableOpacity>
               </View>
             </View>
 
@@ -720,6 +752,13 @@ class UserDetail extends Component {
             hideModal={this.hideStarModal}
             addStar={this.addStar}
           />
+          <SendMessageModal
+            visible={this.state.messageModalVisible}
+            senderId={this.props.currentUser.account.id}
+            receiverId={this.props.route.params.userId}
+            hideModal={this.hideMessageModal}
+            sendMessage={this.sendMessage}
+          />
           {this.state.loading && (
             <View style={styles.loading}>
               <ActivityIndicator size="large" color={Color.primary} />
@@ -854,6 +893,21 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: "center",
     justifyContent: "center",
+  },
+  messagesButton: {
+    height: 35,
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 100,
+    borderRadius: 30,
+    backgroundColor: "#409eff",
+  },
+  messageText: {
+    color: "#FFF",
   },
 });
 

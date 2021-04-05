@@ -25,8 +25,16 @@ export function getUsers(response) {
   export function getUsersThunk(term, price, exprOrPrice, skills, countries,page,size,token) {
     //alert(exprOrPrice)
     let priceSort = "ASCENDING";
-    if (price == 0) priceSort = "ASCENDING"
-    else priceSort = "DESCENDING"
+    if (price == 0) priceSort = "ASCENDING";
+    else priceSort = "DESCENDING";
+
+    console.log("term",term);
+    console.log("price",price);
+    console.log("exprOrPrice",exprOrPrice);
+    console.log("skills",skills);
+    console.log("countries",countries);
+    console.log("countries",page);
+    console.log("countries",size);
   
     return function (dispatch, getState) {
   

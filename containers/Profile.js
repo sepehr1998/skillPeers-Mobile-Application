@@ -20,19 +20,23 @@ import Color from "../constants/color.js";
 import Toast from "react-native-easy-toast";
 import DropDownPicker from "react-native-dropdown-picker";
 import { ProgressBar } from "react-native-paper";
-import ImagePicker from "react-native-image-crop-picker";
 import { Modal, Portal, Button, Provider } from "react-native-paper";
 import AddSkillModal from "../components/AddSkillModal";
 import AddHourlyRateModal from "../components/AddHourlyRateModal";
 import AddExperienceModal from "../components/AddExperienceModal";
 import AddEducationModal from "../components/AddEducationModal";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
+//import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+//import ImagePicker from 'react-native-image-crop-picker';
+import { Avatar, Badge, withBadge } from "react-native-elements";
+import { decode as atob, encode as btoa } from "base-64";
 
 class Profile extends Component {
   constructor(props) {
     super();
     this.state = {
       editedProfile: undefined,
+      unreadMessageCount: -1,
       countries: [],
       cities: [],
       countryId: [],
@@ -41,9 +45,8 @@ class Profile extends Component {
       city: undefined,
       loading: true,
       image: null,
-      images: null
+      images: null,
     };
-    this.uploadNewImage = this.uploadNewImage.bind(this);
   }
 
   UNSAFE_componentWillMount() {
@@ -59,10 +62,17 @@ class Profile extends Component {
     if (this.props.profile != null && this.props.profile.user != null) {
       this.setState({ editedProfile: this.props.profile });
     }
+
+    if (this.props.profile != null && this.props.profile.user != null) {
+      this.getUnreadMessages();
+    }
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if ((prevProps.currentUser !== this.props.currentUser)&&this.props.currentUser) {
+    if (
+      prevProps.currentUser !== this.props.currentUser &&
+      this.props.currentUser
+    ) {
       this.getProfile();
     }
   }
@@ -96,6 +106,28 @@ class Profile extends Component {
       .catch((error) => {
         this.setState({ loading: false });
         //console.log("profile error",error);
+      });
+  }
+
+  getUnreadMessages() {
+    fetch(
+      "http://44.240.53.177/api/idn/messages/count?read=false&receiverId=" +
+        this.props.profile.user.id,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "" + this.props.currentUser.accessToken + "",
+        },
+      }
+    )
+      .then((e) => e.json())
+      .then((response) => {
+        console.log("unread count", response);
+        this.setState({ unreadMessageCount: response });
+      })
+      .catch((error) => {
+        console.warn("error get message count", error);
+        this.setState({ loading: false });
       });
   }
 
@@ -151,7 +183,8 @@ class Profile extends Component {
           defaultValue != null ? this.props.profile.profile.city : response[0];
         this.setState({ city: city });
         console.log("default value", defaultValue);
-        var cityIdd = defaultValue != null ? Number(defaultValue) : response[0].id;
+        var cityIdd =
+          defaultValue != null ? Number(defaultValue) : response[0].id;
 
         let selectedCity = [];
         selectedCity.push(cityIdd);
@@ -159,11 +192,6 @@ class Profile extends Component {
         this.setState({
           cityId: selectedCity,
         });
-
-        console.log("varse1", this.state.city);
-
-        console.log("varse2", this.state.cityId);
-
         this.setState({ loading: false });
       })
       .catch((error) => {
@@ -176,14 +204,85 @@ class Profile extends Component {
     return val / 30;
   }
 
-  uploadNewImage(cropping){
-    // ImagePicker.openPicker({
-    //   width: 300,
-    //   height: 400,
-    //   cropping: cropping
-    // }).then(image => {
-    //   console.log(image);
-    // });
+  selectImage = async () => {
+    //this.notifyMessage("under construction");
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+      base64: false,
+    });
+    console.log("selected image1", pickerResult);
+    if (pickerResult.cancelled === true) {
+      return;
+    }
+
+    let localUri = pickerResult.uri;
+    let filename = localUri.split("/").pop();
+    console.log("file name", filename);
+
+    // Infer the type of the image
+    let match = /\.(\w+)$/.exec(filename);
+    let type = match ? `image/${match[1]}` : `image`;
+    console.log("file type", type);
+
+    // Upload the image using the fetch and FormData APIs
+    let formData = new FormData();
+    // Assume "files" is the name of the form field the server expects
+    var photo = {
+      uri: localUri,
+      type: type,
+      name: filename,
+    };
+    console.log("photo", photo);
+    formData.append("files", photo);
+
+    //var file = this.dataURLtoBlob(pickerResult.uri);
+    //console.log("file",file);
+
+    this.notifyMessage("under construction");
+
+    //this.uploadImage(formData);
+  };
+
+  uploadImage(formData) {
+    this.setState({ loading: true });
+    // console.log("image for upload", image);
+    // let formData = new FormData();
+    // formData.append("files", image);
+    this.setState({ loading: true });
+    fetch("http://44.240.53.177/api/pub/files/temp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: "" + this.props.currentUser.accessToken + "",
+      },
+      body: formData,
+    })
+      .then((response) => {
+        console.log("response");
+        console.log(response);
+        return response.json();
+      })
+      .then((json) => {
+        this.setState({ loading: false });
+        console.log("varse");
+        console.log(json[0]);
+      })
+      .catch((error) => {
+        console.log("error image upload", error);
+        this.setState({ loading: false });
+        alert("fail");
+        //this.notifyMessage("Server Problem");
+      });
   }
 
   addSkill = (skill) => {
@@ -223,11 +322,11 @@ class Profile extends Component {
     );
   };
 
-  logout =()=>{
+  logout = () => {
     this.props.userProfile(null);
     this.props.userLogined(null);
     this.setState({ editedProfile: null });
-  }
+  };
 
   deleteSkill = (inputSkill) => {
     var profile = {};
@@ -430,10 +529,6 @@ class Profile extends Component {
     );
   };
 
-  hideExperienceModal = () => {
-    this.setState({ experienceModalVisible: false });
-  };
-
   addEducation = (education) => {
     this.setState({ educationModalVisible: false });
 
@@ -467,6 +562,10 @@ class Profile extends Component {
       profile.hourRates,
       skillUpdater
     );
+  };
+
+  hideEducationModal = () => {
+    this.setState({ educationModalVisible: false });
   };
 
   deleteEducation = (inputEducation) => {
@@ -514,7 +613,7 @@ class Profile extends Component {
   };
 
   hideExperienceModal = () => {
-    this.setState({ educationModalVisible: false });
+    this.setState({ experienceModalVisible: false });
   };
 
   isEmpty(str) {
@@ -532,12 +631,15 @@ class Profile extends Component {
       return;
     }
 
-    if (this.state.countryId == null || this.isEmpty(""+this.state.countryId[0])) {
+    if (
+      this.state.countryId == null ||
+      this.isEmpty("" + this.state.countryId[0])
+    ) {
       this.notifyMessage("country is required");
       return;
     }
 
-    if (this.state.cityId == null || this.isEmpty(""+this.state.cityId[0])) {
+    if (this.state.cityId == null || this.isEmpty("" + this.state.cityId[0])) {
       this.notifyMessage("city is required");
       return;
     }
@@ -560,7 +662,7 @@ class Profile extends Component {
 
     if (
       this.state.countryId != null &&
-      !this.isEmpty(""+this.state.countryId[0])
+      !this.isEmpty("" + this.state.countryId[0])
     ) {
       userInfo.countryId = this.state.countryId[0];
       for (let itm of this.state.countries) {
@@ -574,7 +676,7 @@ class Profile extends Component {
       userInfo.country = null;
     }
 
-    if (this.state.cityId != null && !this.isEmpty(""+this.state.cityId[0])) {
+    if (this.state.cityId != null && !this.isEmpty("" + this.state.cityId[0])) {
       userInfo.cityId = this.state.cityId[0];
       for (let itm of this.state.cities) {
         if (itm.id == userInfo.cityId) {
@@ -760,10 +862,11 @@ class Profile extends Component {
           <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.header}>
               <View style={styles.headerContent}>
-                <TouchableOpacity onPress={() =>{
-                  console.log("call open picker");
-                  this.uploadNewImage(true);
-                  }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.selectImage();
+                  }}
+                >
                   <Image
                     style={styles.avatar}
                     source={
@@ -805,9 +908,22 @@ class Profile extends Component {
                 >
                   <TouchableOpacity
                     style={styles.messagesButton}
-                    onPress={() => this.logout()}
+                    onPress={() =>
+                      this.props.navigation.navigate("MessageContainer")
+                    }
                   >
                     <Text style={styles.messageText}>Messages</Text>
+                    {this.state.unreadMessageCount > 0 && (
+                      <Badge
+                        status="error"
+                        value={this.state.unreadMessageCount}
+                        containerStyle={{
+                          position: "absolute",
+                          top: -4,
+                          right: -4,
+                        }}
+                      />
+                    )}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.logoutButton}
@@ -896,7 +1012,9 @@ class Profile extends Component {
 
                   {
                     <View style={{ zIndex: 999 }}>
-                      <Text style={styles.lable,{marginBottom:10}}>Country*</Text>
+                      <Text style={(styles.lable, { marginBottom: 10 })}>
+                        Country*
+                      </Text>
                       <MultiSelect
                         items={this.state.countries}
                         uniqueKey="id"
@@ -933,7 +1051,11 @@ class Profile extends Component {
 
                   {this.state.cityId != undefined && (
                     <View style={{ zIndex: 10, marginBottom: 10 }}>
-                      <Text style={(styles.lable, { marginTop: 10,marginBottom:10 })}>
+                      <Text
+                        style={
+                          (styles.lable, { marginTop: 10, marginBottom: 10 })
+                        }
+                      >
                         City*
                       </Text>
                       <MultiSelect

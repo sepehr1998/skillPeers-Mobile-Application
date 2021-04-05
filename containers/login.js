@@ -142,7 +142,7 @@ class Login extends Component {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
-            <Text style={styles.header}>LOG IN</Text>
+            <Text style={styles.header}>SIGN IN</Text>
 
             <View style={styles.inputContainer}>
               <TextInput

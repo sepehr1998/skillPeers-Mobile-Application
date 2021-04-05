@@ -131,17 +131,17 @@ export default class ProslinkSlider extends React.Component {
   }
    getData = async () => {
      //TODO,varse
-    // try {
-    //   const value = await AsyncStorage.getItem('@storage_Key')
-    //   if(value !== null) {
-    //     // value previously stored
-    //     //alert(value)
-    //     //if(value == 'erfan')
-    //     //this.setState({ showRealApp: true });
-    //   }
-    // } catch(e) {
-    //   // error reading value
-    // }
+    try {
+      const value = await AsyncStorage.getItem('@storage_Key')
+      if(value !== null) {
+        // value previously stored
+        //alert(value)
+        if(value == 'varse')
+        this.setState({ showRealApp: true });
+      }
+    } catch(e) {
+      // error reading value
+    }
   }
   slider: AppIntroSlider | undefined;
   
@@ -211,7 +211,7 @@ export default class ProslinkSlider extends React.Component {
   };
 
   Done ()  {
-   this.storeData('erfan');
+   this.storeData('varse');
    this.props.navigation.replace('Home')//Home
   }
 

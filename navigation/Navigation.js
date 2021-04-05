@@ -12,6 +12,7 @@ import Home from '../containers/Home';
 import SignInContainer from '../containers/SignInContainer';
 import UnderConstruction from '../containers/UnderConstruction';
 import UserDetail from '../containers/UserDetail';
+import MessageContainer from '../containers/MessageContainer';
 
 const Stack = createStackNavigator();
 
@@ -19,7 +20,7 @@ const Navigation   = () => {
   return (
     <>
      <NavigationContainer> 
-      <Stack.Navigator initialRouteName="Home" headerMode="none" > 
+      <Stack.Navigator initialRouteName="Slider" headerMode="none" > 
 
         <Stack.Screen name="Slider" component={ProslinkSlider} options={{headerShown: false}} />
         <Stack.Screen name="Home" component={Home} /> 
@@ -27,7 +28,8 @@ const Navigation   = () => {
         <Stack.Screen name="CardList" component={CardList} /> 
         <Stack.Screen name="ConfirmEmail" component={ConfirmEmail} /> 
         <Stack.Screen name="UnderConstruction" component={UnderConstruction} /> 
-        <Stack.Screen name="UserDetail" component={UserDetail} /> 
+        <Stack.Screen name="UserDetail" component={UserDetail} />
+        <Stack.Screen name="MessageContainer" component={MessageContainer} />  
       </Stack.Navigator> 
      </NavigationContainer> 
     </>

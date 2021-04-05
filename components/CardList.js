@@ -1,336 +1,382 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
-  SafeAreaView, Image, StyleSheet, ImageBackground, FlatList, View, StatusBar,
-  Text, List, ActivityIndicator, Dimensions, TouchableNativeFeedback
-  , TouchableOpacity, ScrollView
-} from 'react-native';
+  SafeAreaView,
+  Image,
+  StyleSheet,
+  ImageBackground,
+  FlatList,
+  View,
+  StatusBar,
+  Text,
+  List,
+  ActivityIndicator,
+  Dimensions,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import {
-  Card, ListItem, Avatar, Input, Badge, Button, Icon, CheckBox, ButtonGroup,Header,
-  SearchBar
-} from 'react-native-elements'
-import { Rating, AirbnbRating } from 'react-native-ratings';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Actions } from 'react-native-router-flux';
+  Card,
+  ListItem,
+  Avatar,
+  Input,
+  Badge,
+  Button,
+  Icon,
+  CheckBox,
+  ButtonGroup,
+  Header,
+  SearchBar,
+} from "react-native-elements";
+import { Rating, AirbnbRating } from "react-native-ratings";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Actions } from "react-native-router-flux";
 import {
   getUsers,
-  getUsersThunk,
   userLogined,
   getRepoSkillForFilter,
   getRepoSkillsForFilterThunk,
   getRepoCountriesForFilterThunk,
   getRepoCountryForFilter,
-
-} from '../redux/actions/index';
-import { RadioButton, TouchableRipple, Colors } from 'react-native-paper';
+} from "../redux/actions/index";
+import { RadioButton, TouchableRipple, Colors } from "react-native-paper";
 
 import RBSheet from "react-native-raw-bottom-sheet";
-import BottomSheet from 'react-native-simple-bottom-sheet';
+import BottomSheet from "react-native-simple-bottom-sheet";
 //import SectionedMultiSelect from 'react-native-sectioned-multi-select';
-import MultiSelect from 'react-native-multiple-select';
-import UserCard from './UserCard';
-import  color  from '../constants/color';
+import MultiSelect from "react-native-multiple-select";
+import UserCard from "./UserCard";
+import color from "../constants/color";
 
-
-
-const buttons_Price = ['Price Up', 'Price Down']
-const buttons_Experience = ['Experience Up', 'Experience Down']
+const buttons_Price = ["Price Up", "Price Down"];
+const buttons_Experience = ["Experience Up", "Experience Down"];
 
 class CardList extends Component {
   UNSAFE_componentWillMount() {
-     this.getUsersThunk();
-     this.props.getRepoSkillsForFilterThunk();
-     this.props.getRepoCountriesForFilterThunk();
+    this.getUsersThunk();
+    this.props.getRepoSkillsForFilterThunk();
+    this.props.getRepoCountriesForFilterThunk();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.currentUser !== this.props.currentUser) {
       this.resetPaginationParams();
       //if(this.props.currentUser){
-        this.getUsersThunk();
+      this.getUsersThunk();
       //}
     }
-}
-  
+  }
+
   constructor(props) {
-    super()
-    this.state =
-    {
-      value: 'second',
+    super();
+    this.state = {
+      value: "second",
       selectedIndex_Price: 0,
       selectedIndex_Experience: 2,
-      search: '',
-      experiseOrPrice:'priceAvg',
+      search: "",
+      experiseOrPrice: "priceAvg",
       currentPage: 1,
       pageSize: 3,
       pageCount: 10,
-      users:[],
-      loading:true,
-    }
+      users: [],
+      loading: true,
+    };
 
-    this.changeState = this.changeState.bind(this)
-    this.updateIndex_Price = this.updateIndex_Price.bind(this)
-    this.updateIndex_Experience = this.updateIndex_Experience.bind(this)
+    this.changeState = this.changeState.bind(this);
+    this.updateIndex_Price = this.updateIndex_Price.bind(this);
+    this.updateIndex_Experience = this.updateIndex_Experience.bind(this);
   }
 
-
-  resetPaginationParams(){
-    this.setState({currentPage: 1});
-    this.setState({pageSize: 3});
-    this.setState({pageCount: 10});
+  resetPaginationParams() {
+    this.setState({ currentPage: 1 });
+    this.setState({ pageSize: 3 });
+    this.setState({ pageCount: 10 });
+    this.setState({ users: [] });
   }
 
-  convertPramstoUrlString(params){
-    return Object.keys(params).map(function(key) {
-       return key + '=' + params[key];
-    }).join('&');
+  convertPramstoUrlString(params) {
+    return Object.keys(params)
+      .map(function (key) {
+        return key + "=" + params[key];
+      })
+      .join("&");
   }
 
   getUsersThunk() {
-    this.setState({loading: true});
-    let priceSort = "ASCENDING";
-    if (this.state.selectedIndex_Price == 0) priceSort = "ASCENDING"
-    else priceSort = "DESCENDING";
+    this.setState({ loading: true });
+
+    let sortType = "ASCENDING";
+
+    console.log("experience", this.state.selectedIndex_Experience);
+    console.log("price", this.state.selectedIndex_Price);
+
+    if (
+      this.state.selectedIndex_Experience == 1 ||
+      this.state.selectedIndex_Price == 1
+    ) {
+      sortType = "DESCENDING";
+    }
 
     var params = {};
-    if(this.state.currentPage)params.page = this.state.currentPage;
-    if(this.state.pageSize)params.size = this.state.pageSize;
-    if(this.state.selectedItemsSkill)params.skillIds = this.state.selectedItemsSkill;
-    if(this.state.selectedItemsCountry)params.countryIds = this.state.selectedItemsCountry;
-    if(this.state.experiseOrPrice)params["sort[0].column"] = this.state.experiseOrPrice;
-    if(priceSort)params["sort[0].type"] = priceSort;
+    if (this.state.currentPage) params.page = this.state.currentPage;
+    if (this.state.pageSize) params.size = this.state.pageSize;
+    if (this.state.selectedItemsSkill && this.state.selectedItemsSkill > 0)
+      params.skillIds = this.state.selectedItemsSkill;
+    if (this.state.selectedItemsCountry && this.state.selectedItemsCountry > 0)
+      params.countryIds = this.state.selectedItemsCountry;
+    if (this.state.experiseOrPrice)
+      params["sort[0].column"] = this.state.experiseOrPrice;
+    if (sortType) params["sort[0].type"] = sortType;
     params.term = this.state.search;
-    //console.log("params",this.convertPramstoUrlString(params));
-    var token = this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'';
 
-      fetch('http://44.240.53.177/api/pub/users/search?'+this.convertPramstoUrlString(params),
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': ""+token+""
-          }
-        })
-        .then(e => e.json())
-        .then((response)=> {
-          this.setState({users: this.state.users.concat(response)});
-          this.setState({loading: false});
-          this.calculatePageCount(params);
-        }).catch((error) => {
-          this.setState({loading: false});
-        });
-  }  
+    console.log("search params", params);
+
+    //console.log("params",this.convertPramstoUrlString(params));
+    var token = this.props.currentUser?.accessToken
+      ? this.props.currentUser?.accessToken
+      : "";
+
+    fetch(
+      "http://44.240.53.177/api/pub/users/search?" +
+        this.convertPramstoUrlString(params),
+      {
+        method: "GET",
+        headers: {
+          Authorization: "" + token + "",
+        },
+      }
+    )
+      .then((e) => e.json())
+      .then((response) => {
+        this.setState({ users: this.state.users.concat(response) });
+        this.setState({ loading: false });
+        this.calculatePageCount(params);
+      })
+      .catch((error) => {
+        this.setState({ loading: false });
+      });
+  }
 
   calculatePageCount(params) {
     var countparams = JSON.stringify(params);
-        countparams = JSON.parse(countparams);
-        delete countparams.page;
-        delete countparams.size; 
- 
+    countparams = JSON.parse(countparams);
+    delete countparams.page;
+    delete countparams.size;
+
     //console.log("count params",this.convertPramstoUrlString(countparams));
 
-    var token = this.props.currentUser?.accessToken? this.props.currentUser?.accessToken :'';
+    var token = this.props.currentUser?.accessToken
+      ? this.props.currentUser?.accessToken
+      : "";
     //console.log("token",token);
 
-    fetch('http://44.240.53.177/api/pub/users/search/count?'+this.convertPramstoUrlString(countparams),
-    {
-      method: 'GET',
-      headers: {
-        'Authorization': ""+token+""
+    fetch(
+      "http://44.240.53.177/api/pub/users/search/count?" +
+        this.convertPramstoUrlString(countparams),
+      {
+        method: "GET",
+        headers: {
+          Authorization: "" + token + "",
+        },
       }
-    })
-    .then(e => e.json())
-    .then((res)=> {
-      var pageCount = Math.floor((res + this.state.pageSize - 1) / this.state.pageSize);
-      this.setState({pageCount: pageCount});
-    }).catch((error) => {
-      //console.log("error",error);
-      this.setState({pageCount: 1});
-    });
-}
-
-
-loadMore(){
-  if(this.state.currentPage>=this.state.pageCount){
-    console.log("reach end");
-    return;
+    )
+      .then((e) => e.json())
+      .then((res) => {
+        var pageCount = Math.floor(
+          (res + this.state.pageSize - 1) / this.state.pageSize
+        );
+        this.setState({ pageCount: pageCount });
+      })
+      .catch((error) => {
+        //console.log("error",error);
+        this.setState({ pageCount: 1 });
+      });
   }
 
-  var pageNumUpdater = new Promise((resolve, reject) =>{     
-    var newPageNum = this.state.currentPage+1;
-    //console.log("update page num",newPageNum);
-    this.setState({currentPage: newPageNum});
-    resolve();        
-  });  
-  pageNumUpdater
-  .then((result) => {
-    //console.log("load more called",this.state.currentPage);
-    this.getUsersThunk();
-  })
-  .catch((error) => {
-    //console.log("error",error);
-  });
-}
+  loadMore() {
+    if (this.state.currentPage >= this.state.pageCount) {
+      console.log("reach end");
+      return;
+    }
 
+    var pageNumUpdater = new Promise((resolve, reject) => {
+      var newPageNum = this.state.currentPage + 1;
+      //console.log("update page num",newPageNum);
+      this.setState({ currentPage: newPageNum });
+      resolve();
+    });
+    pageNumUpdater
+      .then((result) => {
+        //console.log("load more called",this.state.currentPage);
+        this.getUsersThunk();
+      })
+      .catch((error) => {
+        //console.log("error",error);
+      });
+  }
 
   onSelectedItemsChangeSkill = (selectedItemsSkill) => {
-    this.setState({ selectedItemsSkill }); 
-   //@@@@@@@@@@@@
+    this.state.selectedItemsSkill = selectedItemsSkill;
+    //@@@@@@@@@@@@
+    this.resetPaginationParams();
+    this.Scrollable.close();
     this.getUsersThunk();
   };
   onSelectedItemsChangeCountry = (selectedItemsCountry) => {
-    this.setState({ selectedItemsCountry });
+    this.state.selectedItemsCountry = selectedItemsCountry;
     //@@@@@@@@@@@
+    this.resetPaginationParams();
+    this.Scrollable.close();
     this.getUsersThunk();
-
   };
   changeState(value) {
-
-    this.setState({ value: value, })
-
+    this.setState({ value: value });
   }
   updateIndex_Price(selectedIndex_Price) {
-    this.setState({ selectedIndex_Price })
-    this.state.selectedIndex_Experience=2;
-    this.state.experiseOrPrice='priceAvg';
+    this.state.selectedIndex_Price = selectedIndex_Price;
+    this.state.selectedIndex_Experience = 2;
+    this.state.experiseOrPrice = "priceAvg";
+    this.resetPaginationParams();
     //@@@@@@@@@@@
+    this.Scrollable.close();
     this.getUsersThunk();
-
   }
   updateIndex_Experience(selectedIndex_Experience) {
-    this.setState({ selectedIndex_Experience })
-    this.state.selectedIndex_Price=2;
-    this.state.experiseOrPrice='experimentAvg'
-     //@@@@@@@@@@@
+    console.log("selected experience", selectedIndex_Experience);
+    this.state.selectedIndex_Experience = selectedIndex_Experience;
+    this.state.selectedIndex_Price = 2;
+    this.state.experiseOrPrice = "experimentAvg";
+    this.resetPaginationParams();
+    //@@@@@@@@@@@
+    this.Scrollable.close();
     this.getUsersThunk();
   }
   updateSearch = (search) => {
-    this.setState({ search });
+    this.state.search = search;
+    this.resetPaginationParams();
     //@@@@@@@@@@@@@@
+    this.Scrollable.close();
     this.getUsersThunk();
-  
   };
-
-  updateSearch = (search) => {
-    this.setState({ search });
-  };
-
 
   render() {
-
-    const dimensions = Dimensions.get('window');
+    const dimensions = Dimensions.get("window");
     const AvatarWidth = dimensions.width / 2;
-    const { selectedIndex_Price } = this.state
-    const { selectedIndex_Experience } = this.state
+    const { selectedIndex_Price } = this.state;
+    const { selectedIndex_Experience } = this.state;
     const { search } = this.state;
     const { selectedItemsSkill } = this.state;
     const { selectedItemsCountry } = this.state;
 
-
     const renderItem = ({ item }) => (
       // <Item title={item.firstName} />
-      <UserCard user={item} currentUser={this.props.currentUser} navigation={this.props.navigation}/>
+      <UserCard
+        user={item}
+        currentUser={this.props.currentUser}
+        navigation={this.props.navigation}
+      />
     );
 
-
-    if(!this.state.loading && this.state.users.length==0){
-      return(
-         <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-           <Text>No Users Found</Text>
-           {this.state.loading &&
-            <View style={styles.loading}>
-            <ActivityIndicator size="large" color={color.primary} />
-            </View>
-           }
-         </View>
-      );
-    }
-    else {
-
+    if (!this.state.loading && this.state.users.length == 0) {
       return (
-
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>No Users Found</Text>
+          {this.state.loading && (
+            <View style={styles.loading}>
+              <ActivityIndicator size="large" color={color.primary} />
+            </View>
+          )}
+        </View>
+      );
+    } else {
+      return (
         <SafeAreaView style={styles.container}>
-          <View style={{ flex: 1, backgroundColor: 'white' }}>
-
-            <View style={{ 
-              flexDirection: 'row',
-               borderBottomColor: '#535050',
-               paddingBottom:0,
-               marginBottom:0,
-                borderBottomWidth: 0.2 }}>
-
-
+          <View style={{ flex: 1, backgroundColor: "white" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                borderBottomColor: "#535050",
+                paddingBottom: 0,
+                marginBottom: 0,
+                borderBottomWidth: 0.2,
+              }}
+            >
               <SearchBar
                 placeholder="skill, name, family"
                 onChangeText={this.updateSearch}
                 value={search}
                 platform="android"
-                containerStyle={{ margin: 3, width: '75%' }}
+                containerStyle={{ margin: 3, width: "75%" }}
               />
 
               <Button
                 iconLeft
                 title="Filter"
-                containerStyle={{ marginTop: 20,right:0,width:'20%',padding:0 }}
-                type='outline'
-                style={{padding:0}}
+                containerStyle={{
+                  marginTop: 20,
+                  right: 0,
+                  width: "20%",
+                  padding: 0,
+                }}
+                type="outline"
+                style={{ padding: 0 }}
                 onPress={() => this.Scrollable.open()}
                 icon={
                   <Icon
-                    type='material-community'
+                    type="material-community"
                     name="filter"
                     size={15}
                     color="#0464d2"
                   />
                 }
               />
-
             </View>
-            <View style={{ flex: 3,marginTop:0,paddingTop:0, }}>
+            <View style={{ flex: 3, marginTop: 0, paddingTop: 0 }}>
               <FlatList
                 data={this.state.users}
                 renderItem={renderItem}
                 //onEndReached={this.loadMore()}
                 onEndThreshold={0}
-                onEndReached={() => this.callOnScrollEnd = true}
+                onEndReached={() => (this.callOnScrollEnd = true)}
                 onMomentumScrollEnd={() => {
-                  this.callOnScrollEnd && this.loadMore()
-                  this.callOnScrollEnd = false
+                  this.callOnScrollEnd && this.loadMore();
+                  this.callOnScrollEnd = false;
                 }}
-                keyExtractor={(item,index) => index}
-              /> 
+                keyExtractor={(item, index) => index}
+              />
             </View>
-            <View>
-
-            </View>
+            <View></View>
             <RBSheet
-              ref={ref => {
+              ref={(ref) => {
                 this.Scrollable = ref;
               }}
               closeOnDragDown
               customStyles={{
                 container: {
                   borderTopLeftRadius: 10,
-                  borderTopRightRadius: 10
-                }
+                  borderTopRightRadius: 10,
+                },
               }}
               openDuration={500}
               closeDuration={400}
               closeOnDragDown={true}
               closeOnPressMask={true}
-
             >
-              <ScrollView >
-
-              <MultiSelect
+              <ScrollView>
+                <MultiSelect
                   items={this.props.skillsForFilter}
                   uniqueKey="skillId"
-                  ref={(component) => { this.multiSelect = component }}
+                  ref={(component) => {
+                    this.multiSelect = component;
+                  }}
                   onSelectedItemsChange={this.onSelectedItemsChangeSkill}
                   selectedItems={selectedItemsSkill}
                   selectText="  Skills"
                   searchInputPlaceholderText="Skill Name"
                   // onChangeInput={(text) => console.log(text)}
-                  altFontFamily="ProximaNova-Light"
                   tagRemoveIconColor="#CCC"
                   tagBorderColor="#CCC"
                   tagTextColor="#CCC"
@@ -338,21 +384,49 @@ loadMore(){
                   selectedItemIconColor="#CCC"
                   itemTextColor="#000"
                   displayKey="name"
-                  searchInputStyle={{ color: '#CCC' }}
+                  searchInputStyle={{ color: "#CCC" }}
                   submitButtonColor="#CCC"
                   submitButtonText="Submit"
-                 
                   hideSubmitButton={true}
-                  styleDropdownMenuSubsection={{ borderWidth: 1, }}
-                  
+                  styleDropdownMenuSubsection={{ borderWidth: 1 }}
                 />
-{/* Price Button Filter */}
+                {/* Price Button Filter */}
                 <View style={{ marginBottom: 20 }}>
+                  <MultiSelect
+                    items={this.props.countriesForFilter}
+                    uniqueKey="id"
+                    ref={(component) => {
+                      this.multiSelect = component;
+                    }}
+                    onSelectedItemsChange={this.onSelectedItemsChangeCountry}
+                    selectedItems={selectedItemsCountry}
+                    selectText="  Countries"
+                    searchInputPlaceholderText="Country Name"
+                    // onChangeInput={(text) => console.log(text)}
+                    tagRemoveIconColor="#CCC"
+                    tagBorderColor="#CCC"
+                    tagTextColor="#CCC"
+                    selectedItemTextColor="#CCC"
+                    selectedItemIconColor="#CCC"
+                    itemTextColor="#000"
+                    displayKey="name"
+                    searchInputStyle={{ color: "#CCC" }}
+                    submitButtonColor="#CCC"
+                    submitButtonText="Submit"
+                    hideDropdown={true}
+                    hideSubmitButton={true}
+                    styleDropdownMenuSubsection={{
+                      borderWidth: 1,
+                      borderWidth: 1,
+                    }}
+                  />
+                </View>
+                <View style={{ marginBottom: 20,paddingBottom:20 }}>
                   <ButtonGroup
                     onPress={this.updateIndex_Price}
                     selectedIndex={selectedIndex_Price}
                     buttons={buttons_Price}
-                    containerStyle={{ height: 40, }}
+                    containerStyle={{ height: 40 }}
                   />
                   <ButtonGroup
                     onPress={this.updateIndex_Experience}
@@ -362,42 +436,14 @@ loadMore(){
                     containerStyle={{}}
                   />
                 </View>
-                <View style={{ marginBottom: 20 }}>
-                  <MultiSelect
-                    items={this.props.countriesForFilter}
-                    uniqueKey="id"
-                    ref={(component) => { this.multiSelect = component }}
-                    onSelectedItemsChange={this.onSelectedItemsChangeCountry}
-                    selectedItems={selectedItemsCountry}
-                    selectText="  Countries"
-                    searchInputPlaceholderText="Country Name"
-                    // onChangeInput={(text) => console.log(text)}
-                    altFontFamily="ProximaNova-Light"
-                    tagRemoveIconColor="#CCC"
-                    tagBorderColor="#CCC"
-                    tagTextColor="#CCC"
-                    selectedItemTextColor="#CCC"
-                    selectedItemIconColor="#CCC"
-                    itemTextColor="#000"
-                    displayKey="name"
-                    searchInputStyle={{ color: '#CCC' }}
-                    submitButtonColor="#CCC"
-                    submitButtonText="Submit"
-                    hideDropdown={true}
-                    hideSubmitButton={true}
-                    styleDropdownMenuSubsection={{ borderWidth: 1, borderWidth: 1, }}
-                 
-                  />
-                </View>
               </ScrollView>
             </RBSheet>
-
           </View>
-          {this.state.loading &&
+          {this.state.loading && (
             <View style={styles.loading}>
-            <ActivityIndicator size="large" color={color.primary} />
+              <ActivityIndicator size="large" color={color.primary} />
             </View>
-           }
+          )}
         </SafeAreaView>
       );
     }
@@ -410,7 +456,7 @@ function mapStateToProps(state) {
     users: state.users,
     skillsForFilter: state.skillsForFilter,
     countriesForFilter: state.countriesForFilter,
-    currentUser : state.currentUser
+    currentUser: state.currentUser,
   };
 }
 
@@ -419,17 +465,15 @@ function matchDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       getUsers: getUsers,
-      getUsersThunk: getUsersThunk,
       userLogined: userLogined,
       getRepoSkillsForFilterThunk: getRepoSkillsForFilterThunk,
       getRepoSkillForFilter: getRepoSkillForFilter,
       getRepoCountryForFilter: getRepoCountryForFilter,
       getRepoCountriesForFilterThunk: getRepoCountriesForFilterThunk,
-  
-    }, dispatch)
+    },
+    dispatch
+  );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -438,50 +482,47 @@ const styles = StyleSheet.create({
   },
   container1: {
     flex: 1,
-    justifyContent: "center"
+    justifyContent: "center",
   },
   horizontal: {
     flexDirection: "row",
     justifyContent: "space-around",
-    padding: 10
+    padding: 10,
   },
   myRadio: {
     paddingLeft: 6,
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     marginBottom: 3,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     height: 55,
     elevation: 5,
     borderRadius: 4,
 
-    borderColor: '#fe48d1',
-    borderWidth: .2
+    borderColor: "#fe48d1",
+    borderWidth: 0.2,
   },
   myRadioPress: {
     paddingLeft: 6,
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     marginBottom: 3,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     height: 55,
     elevation: 5,
     borderRadius: 4,
-    borderColor: 'white',
-    borderWidth: 0
+    borderColor: "white",
+    borderWidth: 0,
   },
   loading: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-
-
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
-
 
 export default connect(mapStateToProps, matchDispatchToProps)(CardList);
