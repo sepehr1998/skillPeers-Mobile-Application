@@ -169,12 +169,12 @@ const styles = StyleSheet.create({
   errorTextContainer: {
     alignItems: "center",
     justifyContent: "flex-end",
-    marginBottom:10,
+    marginBottom: 10,
   },
   textAreaContainer: {
     borderColor: "#ccc",
     borderWidth: 1,
-    marginBottom:10,
+    marginBottom: 10,
     padding: 5,
   },
   textArea: {

@@ -178,7 +178,7 @@ class Login extends Component {
             </View>
 
             <View style={{ flex: 1, flexDirection: "column" }}>
-              <CheckBox
+              {/* <CheckBox
                 defaultValue={this.state.checked}
                 center
                 style={styles.checkbox}
@@ -194,7 +194,7 @@ class Login extends Component {
                 checkedColor={Color.primary}
                 checked={this.state.checked}
                 onPress={() => this.setState({ checked: !this.state.checked })}
-              />
+              /> */}
 
               <Text
                 style={{ marginTop: 20, color: "blue", alignSelf: "center" }}
@@ -245,14 +245,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#DCDCDC",
   },
   inner: {
-    padding: 24,
+    padding: 12,
     flex: 1,
   },
   header: {
     fontSize: 36,
-    marginBottom: 48,
+    marginBottom: 36,
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: 15,
   },
   textInput: {
     height: 43,

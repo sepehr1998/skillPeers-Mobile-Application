@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  FlatList
+  FlatList,
 } from "react-native";
 import { CheckBox, Icon } from "react-native-elements";
 import { userLogined } from "../redux/actions/index";
@@ -25,7 +25,6 @@ import Toast, { DURATION } from "react-native-easy-toast";
 import color from "../constants/color.js";
 import { getServerErrorMessage, getHttpErrorMessage } from "../util/Util.js";
 import ShowMessageModal from "../components/ShowMessageModal2";
-
 
 class Outbox extends Component {
   constructor(props) {
@@ -59,7 +58,6 @@ class Outbox extends Component {
     )
       .then((e) => e.json())
       .then((response) => {
-        console.log(response);
         this.setState({ loading: false });
         this.setState({ messages: response });
       })
@@ -81,7 +79,7 @@ class Outbox extends Component {
     this.setState({ showMessageModalVisible: false });
   };
 
-   getDate = (inputDate) => {
+  getDate = (inputDate) => {
     var date = new Date(inputDate);
     var dateString =
       date.getDate() +
@@ -95,11 +93,11 @@ class Outbox extends Component {
       date.getMinutes() +
       ":" +
       date.getSeconds();
-  
+
     return dateString;
   };
-  
-   getMessage = (message) => {
+
+  getMessage = (message) => {
     if (message && message.length < 50) {
       return message;
     }
@@ -109,10 +107,13 @@ class Outbox extends Component {
   render() {
     const renderItem = ({ item }) => {
       return (
-        <TouchableOpacity style={[{ marginTop: 10 }]} onPress={() => {
-          this.setState({ selectedMessage: item });
-    this.setState({ showMessageModalVisible: true });
-        }}>
+        <TouchableOpacity
+          style={[{ marginTop: 10 }]}
+          onPress={() => {
+            this.setState({ selectedMessage: item });
+            this.setState({ showMessageModalVisible: true });
+          }}
+        >
           <View style={[styles.eachMsg]}>
             <View style={[styles.rightBlock]}>
               <View>
@@ -128,8 +129,7 @@ class Outbox extends Component {
                     })
                   }
                 >
-                  {item.receiver.firstName}{" "}
-                  {item.receiver.lastName}
+                  {item.receiver.firstName} {item.receiver.lastName}
                 </Text>
                 <View
                   style={{
@@ -143,25 +143,25 @@ class Outbox extends Component {
               <Text style={styles.msgTxt}>{this.getMessage(item.message)}</Text>
               <View style={styles.footer}>
                 <Text>{this.getDate(item.created)}</Text>
-                <View style={{flexDirection:'row'}}>
+                <View style={{ flexDirection: "row" }}>
                   <Icon
                     name="check"
                     type="font-awesome"
-                    color={'#53afff'}
+                    color={"#53afff"}
                     size={14}
                     onPress={() => {}}
                     style={{ flex: 2, textAlign: "right" }}
                   />
-                  {item.read&&
-                  (<Icon
-                    name="check"
-                    type="font-awesome"
-                    color={'#53afff'}
-                    size={14}
-                    onPress={() => {}}
-                    style={{ flex: 2, textAlign: "right" }}
-                  />)
-                  }
+                  {item.read && (
+                    <Icon
+                      name="check"
+                      type="font-awesome"
+                      color={"#53afff"}
+                      size={14}
+                      onPress={() => {}}
+                      style={{ flex: 2, textAlign: "right" }}
+                    />
+                  )}
                 </View>
               </View>
             </View>
@@ -174,7 +174,7 @@ class Outbox extends Component {
       <View style={{ flex: 1 }}>
         {!this.state.loading && this.state.messages && (
           <ScrollView contentContainerStyle={styles.container}>
-            <View style={{ flex: 1, margin:10,padding:10}}>
+            <View style={{ flex: 1, margin: 10, padding: 10 }}>
               <FlatList
                 data={this.state.messages}
                 renderItem={renderItem}
@@ -287,4 +287,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Linking,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { Picker } from "@react-native-community/picker";
 import { Card, ListItem, Button, Icon, Input } from "react-native-elements";
@@ -43,7 +44,7 @@ class UserDetail extends Component {
   }
 
   getUserProfile() {
-    console.log("get profile for:",this.props.route.params.userId);
+    console.log("get profile for:", this.props.route.params.userId);
     fetch(
       "http://44.240.53.177/api/pub/users/" + this.props.route.params.userId,
       {
@@ -228,12 +229,11 @@ class UserDetail extends Component {
       body: JSON.stringify(message),
     })
       .then((response) => {
-        console.log("varse",response);
         this.setState({ loading: false });
         this.notifyMessage("message sent successfully");
       })
       .catch((error) => {
-        console.log("varseerror", error);
+        console.log("error", error);
         this.setState({ loading: false });
       });
   };
@@ -264,13 +264,33 @@ class UserDetail extends Component {
           >
             Failed to get User Profile
           </Text>
+          <TouchableOpacity
+            style={styles.messagesButton}
+            onPress={() => {
+              this.props.navigation.pop();
+            }}
+          >
+            <Text style={styles.messageText}>back</Text>
+          </TouchableOpacity>
         </View>
       );
     } else
       return (
-        <View>
+        <View style={{ marginBottom: 40 }}>
           <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.header}>
+              <ImageBackground
+                source={
+                  this.state.userProfile.profile.background != null
+                    ? {
+                        uri:
+                          "http://44.240.53.177/files/" +
+                          this.state.userProfile.profile.background,
+                      }
+                    : { uri: "http://44.240.53.177/gradiants/0.png" }
+                }
+                style={{ height: 150, width: null, flex: 2 }}
+              ></ImageBackground>
               <View style={styles.headerContent}>
                 <Image
                   style={styles.avatar}
@@ -305,14 +325,18 @@ class UserDetail extends Component {
                     </Text>
                   )}
 
-                  <TouchableOpacity
-                    style={styles.messagesButton}
-                    onPress={() => {
-                      this.setState({ messageModalVisible: true });
-                      }}
-                  >
-                    <Text style={styles.messageText}>Text Me</Text>
-                  </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.messagesButton}
+                  disabled={
+                    this.state.userProfile.user.id ==
+                    this.props.currentUser.account.id
+                  }
+                  onPress={() => {
+                    this.setState({ messageModalVisible: true });
+                  }}
+                >
+                  <Text style={styles.messageText}>Text Me</Text>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -349,10 +373,14 @@ class UserDetail extends Component {
                   titleStyle={{ textAlign: "left" }}
                   title={
                     <View style={{ display: "flex", flexDirection: "row" }}>
-                      <Text>Hourly Rate</Text>
+                      <Text>Review</Text>
                       <View style={{ flexGrow: 1 }} />
                       <Icon
                         name="add"
+                        disabled={
+                          this.state.userProfile.user.id ==
+                          this.props.currentUser.account.id
+                        }
                         onPress={() =>
                           this.setState({ starModalVisible: true })
                         }
@@ -372,10 +400,22 @@ class UserDetail extends Component {
                         marginBottom: 10,
                       }}
                     >
-                      <Text style={{ fontWeight: "bold",flex:2,textAlign:'center' }}>
+                      <Text
+                        style={{
+                          fontWeight: "bold",
+                          flex: 2,
+                          textAlign: "center",
+                        }}
+                      >
                         Total Review{" "}
                       </Text>
-                      <Text style={{ fontWeight: "bold",flex:2,textAlign:'center' }}>
+                      <Text
+                        style={{
+                          fontWeight: "bold",
+                          flex: 2,
+                          textAlign: "center",
+                        }}
+                      >
                         ({this.state.userProfile.totalReview})
                       </Text>
                     </View>
@@ -385,17 +425,19 @@ class UserDetail extends Component {
                         flex: 4,
                         flexDirection: "row",
                         justifyContent: "center",
-                        alignItems:'center',
-                        marginTop:5
+                        alignItems: "center",
+                        marginTop: 5,
                       }}
                     >
-                      <Text style={{flex:2,textAlign:'center'}}>Technical Skill</Text>
-                      <Rating 
-                       fractions="{1}"
-                       startingValue={this.state.userProfile.technicalRateAvg}
+                      <Text style={{ flex: 2, textAlign: "center" }}>
+                        Technical Skill
+                      </Text>
+                      <Rating
+                        fractions="{1}"
+                        startingValue={this.state.userProfile.technicalRateAvg}
                         imageSize={22}
-                        style={{textAlign:'center',flex:2}}
-                        />
+                        style={{ textAlign: "center", flex: 2 }}
+                      />
                     </View>
 
                     <View
@@ -403,17 +445,19 @@ class UserDetail extends Component {
                         flex: 4,
                         flexDirection: "row",
                         justifyContent: "center",
-                        alignItems:'center',
-                        marginTop:5
+                        alignItems: "center",
+                        marginTop: 5,
                       }}
                     >
-                      <Text style={{flex:2,textAlign:'center'}}>On Time</Text>
-                      <Rating 
-                       fractions="{1}"
-                       startingValue={this.state.userProfile.timeRateAvg}
+                      <Text style={{ flex: 2, textAlign: "center" }}>
+                        On Time
+                      </Text>
+                      <Rating
+                        fractions="{1}"
+                        startingValue={this.state.userProfile.timeRateAvg}
                         imageSize={22}
-                        style={{textAlign:'center',flex:2}}
-                        />
+                        style={{ textAlign: "center", flex: 2 }}
+                      />
                     </View>
 
                     <View
@@ -421,17 +465,21 @@ class UserDetail extends Component {
                         flex: 4,
                         flexDirection: "row",
                         justifyContent: "center",
-                        alignItems:'center',
-                        marginTop:5
+                        alignItems: "center",
+                        marginTop: 5,
                       }}
                     >
-                      <Text style={{flex:2,textAlign:'center'}}>Communication Skill</Text>
-                      <Rating 
-                       fractions="{1}"
-                       startingValue={this.state.userProfile.communicationRateAvg}
+                      <Text style={{ flex: 2, textAlign: "center" }}>
+                        Communication Skill
+                      </Text>
+                      <Rating
+                        fractions="{1}"
+                        startingValue={
+                          this.state.userProfile.communicationRateAvg
+                        }
                         imageSize={22}
-                        style={{textAlign:'center',flex:2}}
-                        />
+                        style={{ textAlign: "center", flex: 2 }}
+                      />
                     </View>
                   </View>
                 </Card>
@@ -556,21 +604,30 @@ class UserDetail extends Component {
                   <View style={{ flexDirection: "row" }}>
                     {this.state.userProfile.skills.length > 0 &&
                       this.state.userProfile.skills.map((skill, index) => (
-                        <View style={{ flex: 2, flexDirection: 'row',flexWrap:'wrap',justifyContent:'center'}} >
-                        <ListItem
-                          key={index}
-                          containerStyle={{ margin: 0, padding: 3 }}
+                        <View
+                          style={{
+                            flex: 2,
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            justifyContent: "center",
+                          }}
                         >
-                          <Button
-                            style={{ padding: 0, height: 35 }}
-                            title={skill.name + "(" + skill.percent + " years)"}
-                            type="solid"
-                            titleStyle={{
-                              fontSize: 12,
-                            }}
-                            disabled={true}
-                          />
-                        </ListItem>
+                          <ListItem
+                            key={index}
+                            containerStyle={{ margin: 0, padding: 3 }}
+                          >
+                            <Button
+                              style={{ padding: 0, height: 35 }}
+                              title={
+                                skill.name + "(" + skill.percent + " years)"
+                              }
+                              type="solid"
+                              titleStyle={{
+                                fontSize: 12,
+                              }}
+                              disabled={true}
+                            />
+                          </ListItem>
                         </View>
                       ))}
                   </View>
@@ -606,13 +663,13 @@ class UserDetail extends Component {
                         {this.state.userProfile.hourRates[0].amount}{" "}
                         {this.state.userProfile.hourRates[0].currency}
                       </Text>
-                      <Icon
+                      {/* <Icon
                         name="shopping-cart"
                         type="font-awesome"
                         color={Color.primaryBackground}
                         onPress={() => this.notifyMessage("Under Construction")}
                         style={{ flex: 2, textAlign: "right" }}
-                      />
+                      /> */}
                     </View>
                   )}
                 </Card>
@@ -744,6 +801,14 @@ class UserDetail extends Component {
                   )}
                 </Card>
               </View>
+              <TouchableOpacity
+                style={styles.messagesButton}
+                onPress={() => {
+                  this.props.navigation.pop();
+                }}
+              >
+                <Text style={styles.messageText}>back</Text>
+              </TouchableOpacity>
             </View>
           </ScrollView>
           <AddStarModal
@@ -780,16 +845,16 @@ class UserDetail extends Component {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: Color.primaryBackground,
+    backgroundColor: Color.pageBackground,
   },
   headerContent: {
-    paddingTop: 40,
     paddingBottom: 15,
     alignItems: "center",
   },
   avatar: {
     width: 130,
     height: 130,
+    marginTop: -65,
     borderRadius: 63,
     borderWidth: 4,
     borderColor: "white",
@@ -797,12 +862,12 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 22,
-    color: "#FFF",
+    // color: "#FFF",
     fontWeight: "600",
   },
   userInfo: {
     fontSize: 16,
-    color: "#FFF",
+    // color: "#FFF",
     fontWeight: "600",
   },
   body: {

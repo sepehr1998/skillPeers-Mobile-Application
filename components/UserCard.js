@@ -13,6 +13,10 @@ const UserCard = (probs) => {
   const dimensions = Dimensions.get("window");
   const AvatarWidth = dimensions.width / 2;
 
+  function roundNum(num) {
+    return Math.round((num + Number.EPSILON) * 10) / 10;
+  }
+
   function viewUserDetail() {}
   return (
     <TouchableOpacity
@@ -83,48 +87,45 @@ const UserCard = (probs) => {
             }}
           >
             <Text>Technical Skill</Text>
-            <AirbnbRating
-              count={5}
-              defaultRating={probs.user.technicalRateAvg}
-              starContainerStyle={{ marginLeft: 45 }}
-              showRating={false}
-              isDisabled={true}
-              size={18}
+            <Rating
+              fractions="{1}"
+              startingValue={roundNum(probs.user.technicalRateAvg / 2)}
+              imageSize={20}
+              style={{ textAlign: "center", marginLeft: 45 }}
             />
           </View>
 
           <View
             style={{
               flex: 1,
+              marginTop: 3,
               flexDirection: "row",
               justifyContent: "space-around",
             }}
           >
             <Text>On Time</Text>
-            <AirbnbRating
-              count={5}
-              defaultRating={probs.user.timeRateAvg}
-              showRating={false}
-              starContainerStyle={{ marginLeft: 75 }}
-              isDisabled={true}
-              size={18}
+            <Rating
+              fractions="{1}"
+              startingValue={roundNum(probs.user.timeRateAvg / 2)}
+              imageSize={20}
+              style={{ textAlign: "center", marginLeft: 80 }}
             />
           </View>
 
           <View
             style={{
               flex: 1,
+              marginTop: 3,
               flexDirection: "row",
               justifyContent: "space-around",
             }}
           >
             <Text>Communication Skill</Text>
-            <AirbnbRating
-              count={5}
-              defaultRating={probs.user.communicationRateAvg}
-              showRating={false}
-              isDisabled={true}
-              size={18}
+            <Rating
+              fractions="{1}"
+              startingValue={roundNum(probs.user.communicationRateAvg / 2)}
+              imageSize={20}
+              style={{ textAlign: "center", marginLeft: 5 }}
             />
           </View>
         </View>
@@ -166,7 +167,10 @@ const UserCard = (probs) => {
           <View style={{ flex: 1, flexDirection: "row" }}>
             <Icon name="currency-usd" type="material-community" />
             <Text style={{ marginRight: 15 }}>
-              {probs.user.hourRates[0]!=undefined? probs.user.hourRates[0].amount:0} / Hr
+              {probs.user.hourRates[0] != undefined
+                ? probs.user.hourRates[0].amount
+                : 0}{" "}
+              / Hr
             </Text>
           </View>
           <View style={{ flex: 1, flexDirection: "row" }}>

@@ -41,7 +41,6 @@ import {
   getRepoCountryForFilter,
 } from "../redux/actions/index";
 import { RadioButton, TouchableRipple, Colors } from "react-native-paper";
-
 import RBSheet from "react-native-raw-bottom-sheet";
 import BottomSheet from "react-native-simple-bottom-sheet";
 //import SectionedMultiSelect from 'react-native-sectioned-multi-select';
@@ -61,6 +60,8 @@ class CardList extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.currentUser !== this.props.currentUser) {
+      this.setState({ search: "" });
+      this.state.search = "";
       this.resetPaginationParams();
       //if(this.props.currentUser){
       this.getUsersThunk();
@@ -90,9 +91,13 @@ class CardList extends Component {
 
   resetPaginationParams() {
     this.setState({ currentPage: 1 });
+    this.state.currentPage = 1;
     this.setState({ pageSize: 3 });
+    this.state.pageSize = 3;
     this.setState({ pageCount: 10 });
+    this.state.pageCount = 10;
     this.setState({ users: [] });
+    this.state.users = [];
   }
 
   convertPramstoUrlString(params) {
@@ -107,9 +112,6 @@ class CardList extends Component {
     this.setState({ loading: true });
 
     let sortType = "ASCENDING";
-
-    console.log("experience", this.state.selectedIndex_Experience);
-    console.log("price", this.state.selectedIndex_Price);
 
     if (
       this.state.selectedIndex_Experience == 1 ||
@@ -252,13 +254,17 @@ class CardList extends Component {
     this.Scrollable.close();
     this.getUsersThunk();
   }
-  updateSearch = (search) => {
-    this.state.search = search;
+
+  applySearch = () => {
     this.resetPaginationParams();
     //@@@@@@@@@@@@@@
     this.Scrollable.close();
     this.getUsersThunk();
   };
+
+  isEmpty(str) {
+    return !str || 0 === str.length || !str.trim();
+  }
 
   render() {
     const dimensions = Dimensions.get("window");
@@ -278,104 +284,161 @@ class CardList extends Component {
       />
     );
 
-    if (!this.state.loading && this.state.users.length == 0) {
-      return (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Text>No Users Found</Text>
-          {this.state.loading && (
-            <View style={styles.loading}>
-              <ActivityIndicator size="large" color={color.primary} />
-            </View>
-          )}
-        </View>
-      );
-    } else {
-      return (
-        <SafeAreaView style={styles.container}>
-          <View style={{ flex: 1, backgroundColor: "white" }}>
-            <View
-              style={{
-                flexDirection: "row",
-                borderBottomColor: "#535050",
-                paddingBottom: 0,
-                marginBottom: 0,
-                borderBottomWidth: 0.2,
-              }}
-            >
-              <SearchBar
-                placeholder="skill, name, family"
-                onChangeText={this.updateSearch}
-                value={search}
-                platform="android"
-                containerStyle={{ margin: 3, width: "75%" }}
-              />
-
-              <Button
-                iconLeft
-                title="Filter"
-                containerStyle={{
-                  marginTop: 20,
-                  right: 0,
-                  width: "20%",
-                  padding: 0,
-                }}
-                type="outline"
-                style={{ padding: 0 }}
-                onPress={() => this.Scrollable.open()}
-                icon={
-                  <Icon
-                    type="material-community"
-                    name="filter"
-                    size={15}
-                    color="#0464d2"
-                  />
+    // if (!this.state.loading && this.state.users.length == 0) {
+    //   return (
+    //     <View
+    //       style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+    //     >
+    //       <Text>No Users Found</Text>
+    //       {this.state.loading && (
+    //         <View style={styles.loading}>
+    //           <ActivityIndicator size="large" color={color.primary} />
+    //         </View>
+    //       )}
+    //     </View>
+    //   );
+    // } else {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1, backgroundColor: "white" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              borderBottomColor: "#535050",
+              paddingBottom: 0,
+              marginBottom: 0,
+              borderBottomWidth: 0.2,
+            }}
+          >
+            <SearchBar
+              placeholder="skill, name, family"
+              onChangeText={(text) => {
+                this.setState({ search: text });
+                this.state.search = "";
+                if (this.isEmpty(text)) {
+                  console.log("search param", this.state.search);
+                  this.applySearch();
                 }
-              />
-            </View>
-            <View style={{ flex: 3, marginTop: 0, paddingTop: 0 }}>
-              <FlatList
-                data={this.state.users}
-                renderItem={renderItem}
-                //onEndReached={this.loadMore()}
-                onEndThreshold={0}
-                onEndReached={() => (this.callOnScrollEnd = true)}
-                onMomentumScrollEnd={() => {
-                  this.callOnScrollEnd && this.loadMore();
-                  this.callOnScrollEnd = false;
+              }}
+              value={search}
+              disabled={this.state.loading}
+              platform="android"
+              containerStyle={{ margin: 3, width: "55%" }}
+            />
+
+            <Button
+              iconLeft
+              title="Filter"
+              containerStyle={{
+                marginTop: 20,
+                right: 0,
+                marginRight: 10,
+                width: "18%",
+                padding: 0,
+              }}
+              type="outline"
+              style={{ padding: 0 }}
+              onPress={() => this.Scrollable.open()}
+              icon={
+                <Icon
+                  type="material-community"
+                  name="filter"
+                  size={15}
+                  color="#0464d2"
+                />
+              }
+            />
+
+            <Button
+              iconLeft
+              title="Apply"
+              containerStyle={{
+                marginTop: 20,
+                right: 0,
+                width: "18%",
+                padding: 0,
+              }}
+              type="outline"
+              style={{ padding: 0 }}
+              onPress={() => this.applySearch()}
+              icon={
+                <Icon
+                  type="material-community"
+                  name="gesture-tap"
+                  size={15}
+                  color="#0464d2"
+                />
+              }
+            />
+          </View>
+          <View style={{ flex: 3, marginTop: 0, paddingTop: 0 }}>
+            <FlatList
+              data={this.state.users}
+              renderItem={renderItem}
+              //onEndReached={this.loadMore()}
+              onEndThreshold={0}
+              onEndReached={() => (this.callOnScrollEnd = true)}
+              onMomentumScrollEnd={() => {
+                this.callOnScrollEnd && this.loadMore();
+                this.callOnScrollEnd = false;
+              }}
+              keyExtractor={(item, index) => index}
+            />
+          </View>
+          <View></View>
+          <RBSheet
+            ref={(ref) => {
+              this.Scrollable = ref;
+            }}
+            closeOnDragDown
+            customStyles={{
+              container: {
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              },
+            }}
+            openDuration={500}
+            closeDuration={400}
+            closeOnDragDown={true}
+            closeOnPressMask={true}
+          >
+            <ScrollView>
+              <MultiSelect
+                items={this.props.skillsForFilter}
+                uniqueKey="skillId"
+                ref={(component) => {
+                  this.multiSelect = component;
                 }}
-                keyExtractor={(item, index) => index}
+                onSelectedItemsChange={this.onSelectedItemsChangeSkill}
+                selectedItems={selectedItemsSkill}
+                selectText="  Skills"
+                searchInputPlaceholderText="Skill Name"
+                // onChangeInput={(text) => console.log(text)}
+                tagRemoveIconColor="#CCC"
+                tagBorderColor="#CCC"
+                tagTextColor="#CCC"
+                selectedItemTextColor="#CCC"
+                selectedItemIconColor="#CCC"
+                itemTextColor="#000"
+                displayKey="name"
+                searchInputStyle={{ color: "#CCC" }}
+                submitButtonColor="#CCC"
+                submitButtonText="Submit"
+                hideSubmitButton={true}
+                styleDropdownMenuSubsection={{ borderWidth: 1 }}
               />
-            </View>
-            <View></View>
-            <RBSheet
-              ref={(ref) => {
-                this.Scrollable = ref;
-              }}
-              closeOnDragDown
-              customStyles={{
-                container: {
-                  borderTopLeftRadius: 10,
-                  borderTopRightRadius: 10,
-                },
-              }}
-              openDuration={500}
-              closeDuration={400}
-              closeOnDragDown={true}
-              closeOnPressMask={true}
-            >
-              <ScrollView>
+              {/* Price Button Filter */}
+              <View style={{ marginBottom: 20 }}>
                 <MultiSelect
-                  items={this.props.skillsForFilter}
-                  uniqueKey="skillId"
+                  items={this.props.countriesForFilter}
+                  uniqueKey="id"
                   ref={(component) => {
                     this.multiSelect = component;
                   }}
-                  onSelectedItemsChange={this.onSelectedItemsChangeSkill}
-                  selectedItems={selectedItemsSkill}
-                  selectText="  Skills"
-                  searchInputPlaceholderText="Skill Name"
+                  onSelectedItemsChange={this.onSelectedItemsChangeCountry}
+                  selectedItems={selectedItemsCountry}
+                  selectText="  Countries"
+                  searchInputPlaceholderText="Country Name"
                   // onChangeInput={(text) => console.log(text)}
                   tagRemoveIconColor="#CCC"
                   tagBorderColor="#CCC"
@@ -387,66 +450,40 @@ class CardList extends Component {
                   searchInputStyle={{ color: "#CCC" }}
                   submitButtonColor="#CCC"
                   submitButtonText="Submit"
+                  hideDropdown={true}
                   hideSubmitButton={true}
-                  styleDropdownMenuSubsection={{ borderWidth: 1 }}
+                  styleDropdownMenuSubsection={{
+                    borderWidth: 1,
+                    borderWidth: 1,
+                  }}
                 />
-                {/* Price Button Filter */}
-                <View style={{ marginBottom: 20 }}>
-                  <MultiSelect
-                    items={this.props.countriesForFilter}
-                    uniqueKey="id"
-                    ref={(component) => {
-                      this.multiSelect = component;
-                    }}
-                    onSelectedItemsChange={this.onSelectedItemsChangeCountry}
-                    selectedItems={selectedItemsCountry}
-                    selectText="  Countries"
-                    searchInputPlaceholderText="Country Name"
-                    // onChangeInput={(text) => console.log(text)}
-                    tagRemoveIconColor="#CCC"
-                    tagBorderColor="#CCC"
-                    tagTextColor="#CCC"
-                    selectedItemTextColor="#CCC"
-                    selectedItemIconColor="#CCC"
-                    itemTextColor="#000"
-                    displayKey="name"
-                    searchInputStyle={{ color: "#CCC" }}
-                    submitButtonColor="#CCC"
-                    submitButtonText="Submit"
-                    hideDropdown={true}
-                    hideSubmitButton={true}
-                    styleDropdownMenuSubsection={{
-                      borderWidth: 1,
-                      borderWidth: 1,
-                    }}
-                  />
-                </View>
-                <View style={{ marginBottom: 20,paddingBottom:20 }}>
-                  <ButtonGroup
-                    onPress={this.updateIndex_Price}
-                    selectedIndex={selectedIndex_Price}
-                    buttons={buttons_Price}
-                    containerStyle={{ height: 40 }}
-                  />
-                  <ButtonGroup
-                    onPress={this.updateIndex_Experience}
-                    selectedIndex={selectedIndex_Experience}
-                    buttons={buttons_Experience}
-                    containerStyle={{ height: 40 }}
-                    containerStyle={{}}
-                  />
-                </View>
-              </ScrollView>
-            </RBSheet>
+              </View>
+              <View style={{ marginBottom: 20, paddingBottom: 20 }}>
+                <ButtonGroup
+                  onPress={this.updateIndex_Price}
+                  selectedIndex={selectedIndex_Price}
+                  buttons={buttons_Price}
+                  containerStyle={{ height: 40 }}
+                />
+                <ButtonGroup
+                  onPress={this.updateIndex_Experience}
+                  selectedIndex={selectedIndex_Experience}
+                  buttons={buttons_Experience}
+                  containerStyle={{ height: 40 }}
+                  containerStyle={{}}
+                />
+              </View>
+            </ScrollView>
+          </RBSheet>
+        </View>
+        {this.state.loading && (
+          <View style={styles.loading}>
+            <ActivityIndicator size="large" color={color.primary} />
           </View>
-          {this.state.loading && (
-            <View style={styles.loading}>
-              <ActivityIndicator size="large" color={color.primary} />
-            </View>
-          )}
-        </SafeAreaView>
-      );
-    }
+        )}
+      </SafeAreaView>
+    );
+    // }
   }
 }
 

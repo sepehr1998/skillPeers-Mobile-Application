@@ -59,7 +59,6 @@ class Inbox extends Component {
     )
       .then((e) => e.json())
       .then((response) => {
-        console.log(response);
         this.setState({ loading: false });
         this.setState({ messages: response });
       })
@@ -137,7 +136,7 @@ class Inbox extends Component {
   };
 
   showMessageDetail(message) {
-    console.log("get message for",message.id);
+    console.log("get message for", message.id);
     this.setState({ selectedMessage: message });
     this.setState({ showMessageModalVisible: true });
     fetch("http://44.240.53.177/api/idn/messages/" + message.id, {
@@ -146,9 +145,8 @@ class Inbox extends Component {
         Authorization: "" + this.props.currentUser.accessToken + "",
       },
     })
-    .then((e) => e.json())
+      .then((e) => e.json())
       .then((response) => {
-        console.log(response);
         message.read = true;
       })
       .catch((error) => {

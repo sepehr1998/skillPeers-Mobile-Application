@@ -28,9 +28,6 @@ class ShowMessageModal extends Component {
     };
   }
 
-
-  
-
   isEmpty(str) {
     return !str || 0 === str.length || !str.trim();
   }
@@ -49,7 +46,7 @@ class ShowMessageModal extends Component {
       date.getMinutes() +
       ":" +
       date.getSeconds();
-  
+
     return dateString;
   };
 
@@ -100,7 +97,9 @@ class ShowMessageModal extends Component {
                 {this.props.message.message}
               </Text>
             </View>
-            <Text style={styles.timeText}>{this.getDate(this.props.message.created)}</Text>
+            <Text style={styles.timeText}>
+              {this.getDate(this.props.message.created)}
+            </Text>
             <View
               style={{
                 flexDirection: "row",
@@ -108,7 +107,6 @@ class ShowMessageModal extends Component {
                 alignItems: "center",
               }}
             >
-
               <TouchableOpacity
                 style={[styles.buttonContainer, styles.cancelBtn]}
                 onPress={() => {
@@ -191,8 +189,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   timeText: {
-    textAlign:"right",
+    textAlign: "right",
     paddingTop: 10,
-    marginBottom:10
+    marginBottom: 10,
   },
 });

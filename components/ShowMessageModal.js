@@ -28,7 +28,6 @@ class ShowMessageModal extends Component {
     };
   }
 
-
   sendMessage() {
     if (this.isEmpty(this.state.message)) {
       this.setState({ errorText: "message is empty" });
@@ -59,7 +58,7 @@ class ShowMessageModal extends Component {
       date.getMinutes() +
       ":" +
       date.getSeconds();
-  
+
     return dateString;
   };
 
@@ -110,7 +109,9 @@ class ShowMessageModal extends Component {
                 {this.props.message.message}
               </Text>
             </View>
-            <Text style={styles.timeText}>{this.getDate(this.props.message.created)}</Text>
+            <Text style={styles.timeText}>
+              {this.getDate(this.props.message.created)}
+            </Text>
             <View
               style={{
                 flexDirection: "row",
@@ -210,8 +211,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   timeText: {
-    textAlign:"right",
+    textAlign: "right",
     paddingTop: 10,
-    marginBottom:10
+    marginBottom: 10,
   },
 });

@@ -30,7 +30,6 @@ import * as ImagePicker from "expo-image-picker";
 //import ImagePicker from 'react-native-image-crop-picker';
 import { Avatar, Badge, withBadge } from "react-native-elements";
 import { decode as atob, encode as btoa } from "base-64";
-
 class Profile extends Component {
   constructor(props) {
     super();
@@ -110,6 +109,7 @@ class Profile extends Component {
   }
 
   getUnreadMessages() {
+    console.log("get message count");
     fetch(
       "http://44.240.53.177/api/idn/messages/count?read=false&receiverId=" +
         this.props.profile.user.id,
@@ -274,7 +274,6 @@ class Profile extends Component {
       })
       .then((json) => {
         this.setState({ loading: false });
-        console.log("varse");
         console.log(json[0]);
       })
       .catch((error) => {
@@ -909,7 +908,7 @@ class Profile extends Component {
                   <TouchableOpacity
                     style={styles.messagesButton}
                     onPress={() =>
-                      this.props.navigation.navigate("MessageContainer")
+                      this.props.navigation.replace("MessageContainer")
                     }
                   >
                     <Text style={styles.messageText}>Messages</Text>
