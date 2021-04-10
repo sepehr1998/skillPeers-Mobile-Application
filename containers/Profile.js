@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   TextInput,
   SafeAreaView,
+  ImageBackground,
 } from "react-native";
 import MultiSelect from "react-native-multiple-select";
 import { Card, Icon } from "react-native-elements";
@@ -860,6 +861,19 @@ class Profile extends Component {
         <View>
           <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.header}>
+              <ImageBackground
+                source={
+                  this.state.editedProfile.profile &&
+                  this.state.editedProfile.profile.background !== null
+                    ? {
+                        uri:
+                          "http://44.240.53.177/files/" +
+                          this.state.editedProfile.profile.background,
+                      }
+                    : { uri: "http://44.240.53.177/gradiants/0.png" }
+                }
+                style={{ height: 150, width: null, flex: 2 }}
+              ></ImageBackground>
               <View style={styles.headerContent}>
                 <TouchableOpacity
                   onPress={() => {
@@ -901,8 +915,10 @@ class Profile extends Component {
                 <View
                   style={{
                     flexDirection: "row",
+                    marginRight: 20,
+                    marginLeft: 20,
                     justifyContent: "space-between",
-                    width: "100%",
+                    width: "90%",
                   }}
                 >
                   <TouchableOpacity
@@ -931,6 +947,15 @@ class Profile extends Component {
                     <Text style={styles.danger}>Logout</Text>
                   </TouchableOpacity>
                 </View>
+
+                {/* <View
+                  style={{
+                    borderWidth:0.5,
+                    width:"100%",
+                    borderColor: "#bbbbbb",
+                    marginTop: 20,
+                  }}
+                /> */}
               </View>
             </View>
 
@@ -1523,16 +1548,17 @@ class Profile extends Component {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: Color.primaryBackground,
+    backgroundColor: "#e8e8e8",
   },
   headerContent: {
-    paddingTop: 40,
+    paddingTop: 15,
     paddingBottom: 15,
     alignItems: "center",
   },
   avatar: {
     width: 130,
     height: 130,
+    marginTop: -75,
     borderRadius: 63,
     borderWidth: 4,
     borderColor: "white",
@@ -1540,12 +1566,12 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 22,
-    color: "#FFF",
+    // color: "#FFF",
     fontWeight: "600",
   },
   userInfo: {
     fontSize: 16,
-    color: "#FFF",
+    // color: "#FFF",
     fontWeight: "600",
   },
   body: {

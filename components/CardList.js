@@ -50,6 +50,7 @@ import color from "../constants/color";
 
 const buttons_Price = ["Price Up", "Price Down"];
 const buttons_Experience = ["Experience Up", "Experience Down"];
+import { Keyboard } from "react-native";
 
 class CardList extends Component {
   UNSAFE_componentWillMount() {
@@ -256,6 +257,7 @@ class CardList extends Component {
   }
 
   applySearch = () => {
+    Keyboard.dismiss();
     this.resetPaginationParams();
     //@@@@@@@@@@@@@@
     this.Scrollable.close();
@@ -371,6 +373,19 @@ class CardList extends Component {
               }
             />
           </View>
+
+          {!this.state.loading && this.state.users.length == 0 && (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text>No Users Found</Text>
+            </View>
+          )}
+
           <View style={{ flex: 3, marginTop: 0, paddingTop: 0 }}>
             <FlatList
               data={this.state.users}
