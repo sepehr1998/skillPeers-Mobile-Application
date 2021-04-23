@@ -124,9 +124,9 @@ class CardList extends Component {
     var params = {};
     if (this.state.currentPage) params.page = this.state.currentPage;
     if (this.state.pageSize) params.size = this.state.pageSize;
-    if (this.state.selectedItemsSkill && this.state.selectedItemsSkill > 0)
+    if (this.state.selectedItemsSkill && this.state.selectedItemsSkill.length > 0)
       params.skillIds = this.state.selectedItemsSkill;
-    if (this.state.selectedItemsCountry && this.state.selectedItemsCountry > 0)
+    if (this.state.selectedItemsCountry && this.state.selectedItemsCountry.length > 0)
       params.countryIds = this.state.selectedItemsCountry;
     if (this.state.experiseOrPrice)
       params["sort[0].column"] = this.state.experiseOrPrice;
@@ -418,6 +418,7 @@ class CardList extends Component {
             closeOnPressMask={true}
           >
             <ScrollView>
+            <View style={{ marginBottom: 10 }}>
               <MultiSelect
                 items={this.props.skillsForFilter}
                 uniqueKey="skillId"
@@ -442,6 +443,7 @@ class CardList extends Component {
                 hideSubmitButton={true}
                 styleDropdownMenuSubsection={{ borderWidth: 1 }}
               />
+              </View>
               {/* Price Button Filter */}
               <View style={{ marginBottom: 20 }}>
                 <MultiSelect

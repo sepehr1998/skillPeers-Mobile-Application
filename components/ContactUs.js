@@ -16,6 +16,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Color from "../constants/color.js";
 import { getServerErrorMessage, getHttpErrorMessage } from "../util/Util.js";
+import { ScrollView } from "react-native-gesture-handler";
 
 class ContactUs extends Component {
   constructor(props) {
@@ -127,9 +128,9 @@ class ContactUs extends Component {
   render() {
     // const [text, setText] = useState('');
     return (
-      <KeyboardAvoidingView
+      <ScrollView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
-        style={styles.container}
+        contentContainerStyle={styles.container}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
@@ -207,7 +208,7 @@ class ContactUs extends Component {
             <ActivityIndicator size="large" color={Color.primary} />
           </View>
         )}
-      </KeyboardAvoidingView>
+      </ScrollView>
     );
   }
 }
@@ -225,13 +226,14 @@ const styles = StyleSheet.create({
   },
   inner: {
     padding: 24,
+    paddingTop:12,
     flex: 1,
   },
   header: {
     fontSize: 36,
-    marginBottom: 48,
+    marginBottom: 20,
     alignSelf: "center",
-    marginTop: 30,
+    marginTop: 10,
   },
   textInput: {
     height: 43,

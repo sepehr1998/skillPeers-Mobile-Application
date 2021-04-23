@@ -514,7 +514,7 @@ class UserDetail extends Component {
                       circleSize={0}
                       circleColor="rgb(45,156,219)"
                       lineColor="rgb(45,156,219)"
-                      timeContainerStyle={{ width: 0, marginTop: 0 }}
+                      timeContainerStyle={{ width: 0, marginTop: 0}}
                       timeStyle={{
                         textAlign: "center",
                         backgroundColor: "#ff9797",
@@ -522,6 +522,7 @@ class UserDetail extends Component {
                         padding: 0,
                         borderRadius: 0,
                         width: 0,
+                        height:100,
                       }}
                       descriptionStyle={{ color: "gray" }}
                       options={{
@@ -568,6 +569,7 @@ class UserDetail extends Component {
                         padding: 0,
                         borderRadius: 0,
                         width: 0,
+                        height:100,
                       }}
                       descriptionStyle={{ color: "gray" }}
                       options={{

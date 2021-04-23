@@ -61,14 +61,14 @@ class Profile extends Component {
   resetData() {
     if (this.props.profile != null && this.props.profile.user != null) {
       this.setState({ editedProfile: this.props.profile });
-    }
-
-    if (this.props.profile != null && this.props.profile.user != null) {
       this.getUnreadMessages();
+    }else if(this.props.currentUser){
+      this.getProfile();
     }
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log("component did update called ",this.props.currentUser);
     if (
       prevProps.currentUser !== this.props.currentUser &&
       this.props.currentUser
@@ -87,6 +87,7 @@ class Profile extends Component {
     })
       .then((e) => e.json())
       .then((response) => {
+        console.log("profile get result",response);
         response.experiments.sort(function (a, b) {
           var aEndDate = new Date(a.end);
           var bEndDate = new Date(b.end);
@@ -104,8 +105,9 @@ class Profile extends Component {
         this.resetData();
       })
       .catch((error) => {
+        console.log("profile error");
         this.setState({ loading: false });
-        //console.log("profile error",error);
+        this.logout();
       });
   }
 
@@ -820,7 +822,7 @@ class Profile extends Component {
       (!this.state.editedProfile || !this.state.editedProfile.user)
     ) {
       return (
-        <View style={[styles.container1, styles.horizontal]}>
+        <View style={styles.loading}>
           <ActivityIndicator size="large" color={Color.primary} />
         </View>
       );
